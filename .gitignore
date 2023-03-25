@@ -1,4 +1,10 @@
 reference/008_客製化AI模型很貴.ipynb
 reference/008_quickReplyMessage生成器.ipynb
+# reference/
 reference/bearbear.xlsx
 config.py
+
+assets/docs/
+reference/005-1_程式簡要說明.ipynb
+reference/005-2_Line對話機器人雛形.ipynb
+ai-event.log
