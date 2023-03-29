@@ -8,9 +8,9 @@ from linebot import (
 from linebot.exceptions import (
     InvalidSignatureError
 )
-import config as config
+import config
 
-# 
+
 # 生成實體物件
 line_bot_api = LineBotApi(config.line_bot_api)
 handler = WebhookHandler(config.handler)
@@ -24,7 +24,7 @@ handler = WebhookHandler(config.handler)
 
 # 設定Server啟用細節
 app = Flask(__name__)
-run_with_ngrok(app)
+# run_with_ngrok(app)
 
 # 
 '''
@@ -197,4 +197,4 @@ def handle_video_message(event):
 # 
 # 運行主程序
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5002)

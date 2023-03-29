@@ -219,6 +219,10 @@ print("===========您的message json已經生成好了，請慢用===========")
 reply_message_json=json.dumps(reply_message, indent = 2) 
 print(reply_message_json)
 
+with open('./quick_reply_output.txt', 'a') as out:
+    out.write(reply_message_json)
+    out.write('\n')
+
 
 # original_string = str(quick_reply)
 # new_string = original_string.replace("'","\"")
