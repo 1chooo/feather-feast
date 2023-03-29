@@ -14,36 +14,26 @@ from numpy import NaN
 import math
 import json
 from linebot import (
-    LineBotApi, 
-    WebhookHandler
+    LineBotApi, WebhookHandler
 )
 from linebot.exceptions import (
-    InvalidSignatureError
+    InvalidSignatureError, LineBotApiError
 )
 from linebot.models import (
-    ImagemapSendMessage,
-    TextSendMessage,
-    ImageSendMessage,
-    LocationSendMessage,
-    FlexSendMessage,
-    VideoSendMessage,
-    StickerSendMessage,
-    AudioSendMessage,
-    ImageMessage,
-    VideoMessage,
-    AudioMessage,
-    TextMessage
+    ImagemapSendMessage, TextSendMessage,
+    ImageSendMessage, LocationSendMessage,
+    FlexSendMessage, VideoSendMessage,
+    StickerSendMessage, AudioSendMessage,
+    ImageMessage, VideoMessage,
+    AudioMessage, TextMessage
 )
 from linebot.models.template import (
-    ButtonsTemplate,
-    CarouselTemplate,
-    ConfirmTemplate,
-    ImageCarouselTemplate
+    ButtonsTemplate, CarouselTemplate,
+    ConfirmTemplate, ImageCarouselTemplate
 )
 from linebot.models.template import *
 from linebot.models.events import (
-    FollowEvent,
-    MessageEvent
+    FollowEvent, MessageEvent
 )
 
 
@@ -61,52 +51,80 @@ plot_content = pd.read_excel("./bearbear.xlsx")
     Get the current date to record the behaviors
     of users.
 """
+def check_dir(file_path) -> None:
+
+    if not os.path.isdir(file_path):
+        os.mkdir(file_path, mode=0o777)
+        print(file_path, 'has been created successfully.')
+
+    return None
+
+def get_output_path(file_path, current_date, id, type) -> str:
+
+    output_path = file_path + current_date + '_' + id + type
+
+    return output_path
+
+
 current_date = datetime.datetime.today().strftime('%Y%m%d')
 user_log_path = "./log/" + current_date
 
-if not os.path.isdir(user_log_path):
-    os.mkdir(user_log_path, mode=0o777)
-    print(user_log_path, 'has been created successfully.')
 
-def detect_json_array_to_new_message_array(jsonObjectArray) -> list:
+check_dir(user_log_path)
+
+def json_to_line_messages(json_object_array) -> list:
     
-    # jsonObject = json.loads(jsonObjectString)
-    returnArray = []
+    return_array = []
 
-
-    # 讀取其用來判斷的元件
-    for jsonObject in jsonObjectArray:
-        message_type = jsonObject.get('type')
+    for json_object in json_object_array:
+        try:
+            message_type = json_object['type']
+        except KeyError:
+            print('JSON object does not contain "type" attribute:', json_object)
+            continue
           
-        # 轉換
-        if message_type == 'text':
-            returnArray.append(TextSendMessage.new_from_json_dict(jsonObject))
-        elif message_type == 'imagemap':
-            returnArray.append(ImagemapSendMessage.new_from_json_dict(jsonObject))
-        elif message_type == 'template':
-            returnArray.append(TemplateSendMessage.new_from_json_dict(jsonObject))
-        elif message_type == 'image':
-            returnArray.append(ImageSendMessage.new_from_json_dict(jsonObject))
-        elif message_type == 'sticker':
-            returnArray.append(StickerSendMessage.new_from_json_dict(jsonObject))  
-        elif message_type == 'audio':
-            returnArray.append(AudioSendMessage.new_from_json_dict(jsonObject))  
-        elif message_type == 'location':
-            returnArray.append(LocationSendMessage.new_from_json_dict(jsonObject))
-        elif message_type == 'flex':
-            returnArray.append(FlexSendMessage.new_from_json_dict(jsonObject))  
-        elif message_type == 'video':
-            returnArray.append(VideoSendMessage.new_from_json_dict(jsonObject))    
+        
+        try:
+            if message_type == 'text':
+                return_array.append(
+                    TextSendMessage.new_from_json_dict(json_object))
+            elif message_type == 'imagemap':
+                return_array.append(
+                    ImagemapSendMessage.new_from_json_dict(json_object))
+            elif message_type == 'template':
+                return_array.append(
+                    TemplateSendMessage.new_from_json_dict(json_object))
+            elif message_type == 'image':
+                return_array.append(
+                    ImageSendMessage.new_from_json_dict(json_object))
+            elif message_type == 'sticker':
+                return_array.append(
+                    StickerSendMessage.new_from_json_dict(json_object))  
+            elif message_type == 'audio':
+                return_array.append(
+                    AudioSendMessage.new_from_json_dict(json_object))  
+            elif message_type == 'location':
+                return_array.append(
+                    LocationSendMessage.new_from_json_dict(json_object))
+            elif message_type == 'flex':
+                return_array.append(
+                    FlexSendMessage.new_from_json_dict(json_object))  
+            elif message_type == 'video':
+                return_array.append(
+                    VideoSendMessage.new_from_json_dict(json_object)) 
+            else:
+                print('Unknown message type:', message_type)
+        except:
+            print('Failed to create Line message from JSON object:', json_object)
           
-    return returnArray
-
-"""### Find the repliance from the Excel, then turn them into the message."""
+    return return_array
 
 
+""" Find the repliance from the Excel, then turn them into the message."""
 
-def drama_execl_to_json(user_input_keyword) -> list:
+def find_drama_by_keyword(user_input_keyword) -> list:
 
-    result = plot_content[plot_content['keyword']==user_input_keyword]
+    result = plot_content[plot_content['keyword'] == user_input_keyword]
     result_dict=result.to_dict()
 
     for field in result_dict.keys():
@@ -131,18 +149,23 @@ def drama_execl_to_json(user_input_keyword) -> list:
     if pd.isna(result_dict['choice_button']) is False:
         reply_json_array[len(reply_json_array)-1].update(json.loads(result_dict['choice_button']))
 
-    reply_message_array = detect_json_array_to_new_message_array(reply_json_array)
+    reply_message_array = json_to_line_messages(reply_json_array)
+    # print(reply_message_array)
 
     return reply_message_array
 
-"""### start the server"""
+
+""" start the server """
 
 app = Flask(__name__)
 
-# start the sever and open the route
-# that we can get request.
 @app.route("/callback", methods=['POST'])
 def callback() -> str:
+
+    """__start server__
+        start the sever and open the route
+        callback that we can get request.
+    """
 
     # get X-Line-Signature header value
     signature = request.headers['X-Line-Signature']
@@ -153,9 +176,9 @@ def callback() -> str:
 
     # record users' log
     file_path = user_log_path + '/user-event.log'
-    with open(file_path, 'a') as testwritefile:
-      testwritefile.write(body)
-      testwritefile.write('\n')
+    with open(file_path, 'a') as output_file:
+      output_file.write(body)
+      output_file.write('\n')
 
     # handle webhook body
     try:
@@ -180,14 +203,24 @@ def callback() -> str:
 def reply_text_and_get_user_profile(event) -> None:
     
     # 取出消息內User的資料
-    user_profile = line_bot_api.get_profile(event.source.user_id)
-        
+    try:
+        user_profile = line_bot_api.get_profile(event.source.user_id)
+    except LineBotApiError as e:
+        # 處理取得 user profile 失敗的情況
+        print(f"LineBotApiError: {e}")
+        return
+    
     # 將用戶資訊存在檔案內
     file_path = user_log_path + '/users-info.txt'
     with open(file_path, "a") as myfile:
-        print(json.dumps(vars(user_profile)))
-        myfile.write(json.dumps(vars(user_profile),sort_keys=True))
-        myfile.write('\n')
+        try:
+            print(json.dumps(vars(user_profile)))
+            myfile.write(json.dumps(vars(user_profile),sort_keys=True))
+            myfile.write('\n')
+        except Exception as e:
+            # 處理寫檔失敗的情況
+            print(f"Error: {e}")
+            return
     
     # # 回覆文字消息與圖片消息
     # line_bot_api.reply_message(
@@ -197,19 +230,26 @@ def reply_text_and_get_user_profile(event) -> None:
 
 
 
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
+    try:
+        messages = find_drama_by_keyword(event.message.text)
+        if messages:
+            line_bot_api.reply_message(
+                event.reply_token, 
+                messages)
+        else:
+            line_bot_api.reply_message(
+                event.reply_token, 
+                TextSendMessage('此物件沒有劇情設計'))
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        line_bot_api.reply_message(
+            event.reply_token, 
+            TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))
 
-    if len(drama_execl_to_json(event.message.text)) != 0 :
-        line_bot_api.reply_message(
-            event.reply_token,
-            drama_execl_to_json(event.message.text)
-        )
-    else:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage('此物件沒有劇情設計')
-        )
 
 """
     Get the image message from the user 
@@ -218,23 +258,40 @@ def handle_text_message(event) -> None:
     image message.
 """
 
-
-# inform the handler when the message event is
-# image message do the below things.
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
 
+    """
+        inform the handler when the message event is
+        image message do the below things.
+    """
+    # 回覆訊息
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='Image has Upload'+ ' ' + event.message.id+'\n'+'你好啊！你的照片被我拿走了')
+        TextSendMessage(
+            text='Image has been Uploaded ' + 
+            event.message.id + 
+            '\non ' + 
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
     )
-    
-    message_content = line_bot_api.get_message_content(event.message.id)
 
-    file_path = user_log_path + '/'
-    with open(file_path + current_date + event.message.id + '.jpg', 'wb') as fd:
-        for chunk in message_content.iter_content():
-            fd.write(chunk)
+    # 下載照片
+    try:
+        message_content = line_bot_api.get_message_content(event.message.id)
+
+        file_path = user_log_path + '/img/'
+        check_dir(file_path)
+
+        output_path = get_output_path(file_path, current_date, event.message.id, '.jpg')
+
+        with open(output_path, 'wb') as fd:
+            for chunk in message_content.iter_content():
+                fd.write(chunk)
+
+    except LineBotApiError as e:
+        # 如果發生例外，記錄錯誤訊息
+        print('Unable to get message content: ' + str(e))
+
 
 """
     Get the audio message from the user 
@@ -243,21 +300,39 @@ def handle_image_message(event):
     audio message.
 """
 
-# inform the handler when the message event is
-# audio message do the below things.
 @handler.add(MessageEvent, message=AudioMessage)
-def handle_audio_message(event):
+def handle_image_message(event):
 
+    """
+        inform the handler when the message event is
+        audio message do the below things.
+    """
+    # 回覆訊息
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='Audio has Upload'+ ' ' + event.message.id))
-    
-    message_content = line_bot_api.get_message_content(event.message.id)
+        TextSendMessage(
+            text='Audio has been Uploaded ' + 
+            event.message.id + 
+            '\non ' +
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+    )
 
-    file_path = user_log_path + '/'
-    with open(file_path + current_date + event.message.id + '.mp3', 'wb') as fd:
-        for chunk in message_content.iter_content():
-            fd.write(chunk)
+    # 下載照片
+    try:
+        message_content = line_bot_api.get_message_content(event.message.id)
+
+        file_path = user_log_path + '/audio/'
+        check_dir(file_path)
+
+        output_path = get_output_path(file_path, current_date, event.message.id, '.mp3')
+
+        with open(output_path, 'wb') as fd:
+            for chunk in message_content.iter_content():
+                fd.write(chunk)
+
+    except LineBotApiError as e:
+        # 如果發生例外，記錄錯誤訊息
+        print('Unable to get message content: ' + str(e))
 
 """
     Get the video message from the user 
@@ -269,21 +344,43 @@ def handle_audio_message(event):
 # inform the handler when the message event is
 # video message do the below things.
 @handler.add(MessageEvent, message=VideoMessage)
-def handle_video_message(event):
+def handle_image_message(event):
 
+    """
+        inform the handler when the message event is
+        video message do the below things.
+    """
+    # 回覆訊息
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='Video has Upload'+ ' ' + event.message.id))
+        TextSendMessage(
+            text='Video has been Uploaded ' + 
+            event.message.id + 
+            '\non ' +
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+    )
 
-    message_content = line_bot_api.get_message_content(event.message.id)
+    # 下載照片
+    try:
+        message_content = line_bot_api.get_message_content(event.message.id)
 
-    file_path = user_log_path + '/'
-    with open(file_path + current_date + event.message.id + '.mp4', 'wb') as fd:
-        for chunk in message_content.iter_content():
-            fd.write(chunk)
+        file_path = user_log_path + '/video/'
+        check_dir(file_path)
 
+        output_path = get_output_path(file_path, current_date, event.message.id, '.mp3')
 
+        with open(output_path, 'wb') as fd:
+            for chunk in message_content.iter_content():
+                fd.write(chunk)
 
-# Web server.
-if __name__ == '__main__':
-    app.run(port=5002)
+    except LineBotApiError as e:
+        # 如果發生例外，記錄錯誤訊息
+        print('Unable to get message content: ' + str(e))
+
+def main() -> None: 
+
+    # Web server.
+    if __name__ == '__main__':
+        app.run(port=5002)
+
+main()
