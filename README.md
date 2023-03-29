@@ -1,7 +1,17 @@
 # Leftovers Bot
 
-### Enviroment: With pip vertial environment
+[![project badge](https://img.shields.io/badge/1chooo-line__leftovers__bot-informational)](https://github.com/1chooo/line-leftovers-bot)
+[![Made with Python](https://img.shields.io/badge/Python=3.9-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+[![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE "Go to license section")
 
+## A brief summary of the project
+
+The primary objective of this project is to develop a Line Bot with an ordering system to address the issue of food waste. 
+Our approach involves integrating the concept of "SDGs" (Sustainable Development Goals) and promoting the idea of "preserving the environment for the long term."
+
+### Enviroment: 
+
+#### With pip vertial environment
 python request: `3.9.6`
 
 ```
@@ -12,6 +22,15 @@ pip install -r requirements.txt
 deactivate
 rm -rf venv     # remove the venv
 ```
+
+#### With ngrok free server
+```SHELL
+brew install ngrok --cask
+ngrok config add-authtoken TOKEN
+python run.py
+ngrok http 5002
+```
+
 
 ### [Reference](./reference.md)
 
