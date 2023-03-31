@@ -142,3 +142,4 @@ widgetsnbextension==4.0.5
 xarray==2022.12.0
 xgboost==1.7.3
 pymysql==1.0.2
+tornado==6.2
