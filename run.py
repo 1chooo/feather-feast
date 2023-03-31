@@ -4,19 +4,12 @@
 Import the package we need. 
 """
 
-from flask import Flask, request, abort, jsonify
-import datetime
-import json
 import config
 import os
 import pandas as pd
 from numpy import NaN
 import math
 import json
-import tornado.web
-import tornado.ioloop
-import asyncio
-import threading
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -29,7 +22,8 @@ from linebot.models import (
     FlexSendMessage, VideoSendMessage,
     StickerSendMessage, AudioSendMessage,
     ImageMessage, VideoMessage,
-    AudioMessage, TextMessage
+    AudioMessage, TextMessage,
+    TemplateSendMessage, MessageTemplateAction
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
@@ -39,7 +33,18 @@ from linebot.models.template import *
 from linebot.models.events import (
     FollowEvent, MessageEvent
 )
-
+import os
+import pandas as pd
+from numpy import NaN
+import math
+from flask import Flask, request, abort, jsonify
+import datetime
+import json
+from LeftoversPackage import template_generator
+import tornado.web
+import tornado.ioloop
+import asyncio
+import threading
 
 # connect to the line bot api and the handler
 line_bot_api = LineBotApi(config.line_bot_api)
@@ -239,6 +244,7 @@ def reply_text_and_get_user_profile(event) -> None:
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
     try:
+
         messages = find_drama_by_keyword(event.message.text)
         if messages:
             line_bot_api.reply_message(
@@ -249,10 +255,17 @@ def handle_text_message(event) -> None:
                 event.reply_token, 
                 TextSendMessage('此物件沒有劇情設計'))
     except Exception as e:
-        print(f"Error occurred: {e}")
-        line_bot_api.reply_message(
-            event.reply_token, 
-            TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))
+
+        if (event.message.text) == '測試按鈕':
+            buttons_template_message = template_generator.buttons_template_generator()
+            line_bot_api.reply_message(
+                event.reply_token,
+                buttons_template_message)
+        else:
+            print(f"Error occurred: {e}")
+            line_bot_api.reply_message(
+                event.reply_token, 
+                TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))
 
 
 """
