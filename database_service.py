@@ -30,16 +30,19 @@ def getProduct(productId, storeId):
 
 # create store
 def createStore(storeName, userId, storeAddress):
-    db, cursor = database.initDataBase()
-    sql = "INSERT INTO stores (name, user_id, address) VALUES ('%s', '%s', '%s')" % (storeName, userId, storeAddress)
-    cursor.execute(sql)
-    db.commit()
-    db.close()
-    return True
+    try:
+        db, cursor = database.initDataBase()
+        sql = "INSERT INTO stores (name, user_id, address) VALUES ('%s', '%s', '%s')" % (storeName, userId, storeAddress)
+        cursor.execute(sql)
+        db.commit()
+        db.close()
+        return True
+    except pymysql.err.IntegrityError:
+        raise ValueError("該使用者已建立商店")
         
 # create product
 def createProduct(userId, productName, productPrice, productNumber, imageFileName):
-    storeId = getStore(userId)
+    storeId = getStore(userId, True)
     imageUrl = config.image_server_host + "/" + config.image_folder + "/" + imageFileName
     db, cursor = database.initDataBase()
     sql = "INSERT INTO products (store_id, name, price, number, image_url) VALUES (%d, '%s', %d, %d, '%s')" % (storeId, productName, productPrice, productNumber, imageUrl)
@@ -147,7 +150,7 @@ def getOrderDetails(itemId, isStoreOrder = False, isUserOrder = False):
     if isStoreOrder:
         sql = "SELECT * FROM orders WHERE store_id = %d" % (itemId)
     elif isUserOrder:
-        sql = "SELECT * FROM orders WHERE user_id = %d" % (itemId)
+        sql = "SELECT * FROM orders WHERE user_id = '%s'" % (itemId)
     else:
         sql = "SELECT * FROM orders WHERE id = %d" % (itemId)
     cursor.execute(sql)
@@ -167,7 +170,7 @@ def getOrderDetails(itemId, isStoreOrder = False, isUserOrder = False):
 
 # get orders by store name
 def getOrdersByStore(userId):
-    storeId = getStore(userId)
+    storeId = getStore(userId, True)
     order = getOrderDetails(storeId, True, False)
     return order
 
