@@ -13,6 +13,10 @@ import pandas as pd
 from numpy import NaN
 import math
 import json
+import tornado.web
+import tornado.ioloop
+import asyncio
+import threading
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -377,10 +381,31 @@ def handle_image_message(event):
         # 如果發生例外，記錄錯誤訊息
         print('Unable to get message content: ' + str(e))
 
+
+# Start Tornado server
+def start_tornado():
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    # Initialize Tornado app
+    tornado_app = tornado.web.Application([
+        ("/"+ config.image_folder +"/(.*)", tornado.web.StaticFileHandler, {"path": config.image_folder}),
+    ])
+    tornado_app.listen(5012)
+    tornado.ioloop.IOLoop.instance().start()
+
+# Start Flask server
+def start_flask():
+    app.run(port=5002)
+
+
 def main() -> None: 
 
     # Web server.
     if __name__ == '__main__':
-        app.run(port=5002)
+        # Start Tornado server in a separate thread
+        tornado_thread = threading.Thread(target=start_tornado)
+        tornado_thread.start()
+
+        # Start Flask server in the main thread
+        start_flask()
 
 main()

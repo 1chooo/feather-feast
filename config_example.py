@@ -13,3 +13,15 @@ model_arn=""
 # 存放消費者上傳照片的桶子名
 client_bucket_name=""
 client_region_name=""
+
+# database settings
+database_host=
+database_port=
+database_user=
+database_passwd=
+database_db=
+database_charset=
+
+# image server host
+image_server_host=
+image_folder=
