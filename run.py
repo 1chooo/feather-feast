@@ -5,17 +5,32 @@ Import the package we need.
 """
 
 import config
+import sys
 import os
+from numpy import NaN
+import json
 import pandas as pd
 from numpy import NaN
 import math
-import json
+from flask import Flask, request, abort, jsonify
+import datetime
+from LeftoversPackage import template_generator
+import tornado.web
+import tornado.ioloop
+import asyncio
+import threading
+import DatabaseService
+
+
+""" Below is the package with Line Bot"""
+
 from linebot import (
     LineBotApi, WebhookHandler
 )
 from linebot.exceptions import (
     InvalidSignatureError, LineBotApiError
 )
+# Import the message type of the line bot
 from linebot.models import (
     ImagemapSendMessage, TextSendMessage,
     ImageSendMessage, LocationSendMessage,
@@ -23,7 +38,13 @@ from linebot.models import (
     StickerSendMessage, AudioSendMessage,
     ImageMessage, VideoMessage,
     AudioMessage, TextMessage,
-    TemplateSendMessage, MessageTemplateAction
+    TemplateSendMessage, QuickReply
+)
+
+# Import the action type of the line bot
+from linebot.models import (
+    MessageTemplateAction, PostbackAction,
+    MessageAction, URIAction, QuickReplyButton
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
@@ -33,18 +54,7 @@ from linebot.models.template import *
 from linebot.models.events import (
     FollowEvent, MessageEvent
 )
-import os
-import pandas as pd
-from numpy import NaN
-import math
-from flask import Flask, request, abort, jsonify
-import datetime
-import json
-from LeftoversPackage import template_generator
-import tornado.web
-import tornado.ioloop
-import asyncio
-import threading
+
 
 # connect to the line bot api and the handler
 line_bot_api = LineBotApi(config.line_bot_api)
@@ -80,88 +90,6 @@ user_log_path = "./log/" + current_date
 
 
 check_dir(user_log_path)
-
-def json_to_line_messages(json_object_array) -> list:
-    
-    return_array = []
-
-    for json_object in json_object_array:
-        try:
-            message_type = json_object['type']
-        except KeyError:
-            print('JSON object does not contain "type" attribute:', json_object)
-            continue
-          
-        
-        try:
-            if message_type == 'text':
-                return_array.append(
-                    TextSendMessage.new_from_json_dict(json_object))
-            elif message_type == 'imagemap':
-                return_array.append(
-                    ImagemapSendMessage.new_from_json_dict(json_object))
-            elif message_type == 'template':
-                return_array.append(
-                    TemplateSendMessage.new_from_json_dict(json_object))
-            elif message_type == 'image':
-                return_array.append(
-                    ImageSendMessage.new_from_json_dict(json_object))
-            elif message_type == 'sticker':
-                return_array.append(
-                    StickerSendMessage.new_from_json_dict(json_object))  
-            elif message_type == 'audio':
-                return_array.append(
-                    AudioSendMessage.new_from_json_dict(json_object))  
-            elif message_type == 'location':
-                return_array.append(
-                    LocationSendMessage.new_from_json_dict(json_object))
-            elif message_type == 'flex':
-                return_array.append(
-                    FlexSendMessage.new_from_json_dict(json_object))  
-            elif message_type == 'video':
-                return_array.append(
-                    VideoSendMessage.new_from_json_dict(json_object)) 
-            else:
-                print('Unknown message type:', message_type)
-        except:
-            print('Failed to create Line message from JSON object:', json_object)
-          
-    return return_array
-
-
-""" Find the repliance from the Excel, then turn them into the message."""
-
-def find_drama_by_keyword(user_input_keyword) -> list:
-
-    result = plot_content[plot_content['keyword'] == user_input_keyword]
-    result_dict=result.to_dict()
-
-    for field in result_dict.keys():
-        for key in result_dict[field].keys():
-            result_dict[field]= result_dict[field][key]
-    
-    reply_json_array=[]
-    combin_json_array=[
-        'reply_message1',
-        'reply_message2',
-        'reply_message3',
-        'reply_message4',
-        'reply_message5'
-    ]
-
-    for ele in combin_json_array:
-        if pd.isna(result_dict[ele]) is False:
-            print(result_dict[ele])
-            reply_json_array.append(json.loads(result_dict[ele]))
-            print(reply_json_array)
-
-    if pd.isna(result_dict['choice_button']) is False:
-        reply_json_array[len(reply_json_array)-1].update(json.loads(result_dict['choice_button']))
-
-    reply_message_array = json_to_line_messages(reply_json_array)
-    # print(reply_message_array)
-
-    return reply_message_array
 
 
 """ start the server """
@@ -239,33 +167,180 @@ def reply_text_and_get_user_profile(event) -> None:
 
 
 
+READY_TO_GET_STORE_NAME = False
+STORE_NAME = ''
+READY_TO_GET_STORE_ADDRESS = False
+STORE_ADDRESS = ''
+STORE_INFO_NUM = 0
+READY_TO_GET_PRODUCT_AMOUNT = False
+PRODUCT_AMOUNT = 0
 
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
+
+    global READY_TO_GET_STORE_NAME, STORE_NAME, STORE_INFO_NUM
+    global READY_TO_GET_STORE_ADDRESS, STORE_ADDRESS
+    global READY_TO_GET_PRODUCT_AMOUNT, PRODUCT_AMOUNT
+
     try:
 
-        messages = find_drama_by_keyword(event.message.text)
-        if messages:
-            line_bot_api.reply_message(
-                event.reply_token, 
-                messages)
-        else:
-            line_bot_api.reply_message(
-                event.reply_token, 
-                TextSendMessage('此物件沒有劇情設計'))
-    except Exception as e:
+        if (event.message.text) == '來認識「一食二鳥」吧！':
 
-        if (event.message.text) == '測試按鈕':
-            buttons_template_message = template_generator.buttons_template_generator()
+            reply_message = []
+            message1 = TextSendMessage(
+                text='歡迎來到\n「一食二鳥-剩食媒合平台」\n有你來惜食 永續新開始🌱')
+            reply_message.append(message1)
+            message2 = TextMessage(
+                text='我們幫助店家\n上架每日剩食\n並讓消費者可自由選購\n' +
+                '好康划算的剩食媒合平台\n完成一筆交易\n滿足雙方需求的同時\n' +
+                '也是愛惜食物\n為地球盡一份心力🌍')
+            reply_message.append(message2)
+            message3 = TextSendMessage(
+                text='你的加入\n將會是我們的一大步🦶\n讓我們一起把試營運的\n剩食平台落地吧！')
+            reply_message.append(message3)
+            
             line_bot_api.reply_message(
                 event.reply_token,
-                buttons_template_message)
-        else:
-            print(f"Error occurred: {e}")
+                reply_message)
+            
+        elif (event.message.text) == '我要成為商家（測試用）' \
+            or (event.message.text) == '我想查詢今日商品（測試用）'\
+            or (event.message.text) == '我想評論（測試用）'\
+            or (event.message.text) == '我要成為食客（測試用）':
+
+            reply_message = []
+            message1 = TextSendMessage(
+                text='此功能仍在測試中，近請期待～ ')
+            reply_message.append(message1)
+            reply_message.append(template_generator.known_us_quick_reply)
+
             line_bot_api.reply_message(
-                event.reply_token, 
-                TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))
+                event.reply_token,
+                reply_message)
+
+            
+        elif (event.message.text) == '我要成為商家':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='在成為商家前，需要確認您是否同意遵守我們的使用者條款呢？')
+            reply_message.append(message1)
+            reply_message.append(
+                template_generator.policy_buttons_template_message)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我還不太清楚使用者條款，可以給我看看使用者條款嗎？':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='來看看我們的使用者條款吧！')
+            reply_message.append(message1)
+            message2 = TextSendMessage(
+                text='使用者條款\n使用者條款使用者條款')
+            reply_message.append(message2)
+            reply_message.append(
+                template_generator.policy_buttons_template_message)
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我已詳閱使用者條款並且願意遵守':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請開始依序點擊下方按鈕：\n' + 
+                '「商品名稱、店家地址、商品數量種類」\n' + 
+                '以「完整」填寫商家資訊，\n' + 
+                '這樣我們才能正確登陸商品資訊哦～')
+            reply_message.append(message1)
+            reply_message.append(template_generator.products_info1)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要輸入店家名稱':
+
+            READY_TO_GET_STORE_NAME = True
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請問您的店家名稱是？')
+            reply_message.append(message1)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+        
+        elif READY_TO_GET_STORE_NAME == True:
+
+            print('準備搜集用戶商店名稱')
+            STORE_NAME = ''
+            STORE_NAME = event.message.text
+            READY_TO_GET_STORE_NAME = False
+            print('已將用戶商店名稱存入`STORE_NAME`，可以準備送進資料庫')
+            STORE_INFO_NUM += 1
+
+            reply_message = []
+            message1 = TextSendMessage(
+                '已成功收到商家名稱，\n您的商店名稱是「' + STORE_NAME + '」！')
+            reply_message.append(message1)
+            message2 = TextSendMessage(
+                '請繼續點擊「店家地址」已填寫完整資！')
+            reply_message.append(message2)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要輸入店家地址':
+
+            READY_TO_GET_STORE_ADDRESS = True
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請問您的店家地址是？')
+            reply_message.append(message1)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif READY_TO_GET_STORE_ADDRESS == True:
+
+            print('準備搜集用戶商店地址')
+            STORE_ADDRESS = ''
+            STORE_ADDRESS = event.message.text
+            READY_TO_GET_STORE_ADDRESS = False
+            print('已將用戶商店地址存入`STORE_ADDRESS`，可以準備送進資料庫')
+            STORE_INFO_NUM += 1
+
+            reply_message = []
+            message1 = TextSendMessage(
+                '已成功收到商家地址，\n您的商店地址是「' + STORE_ADDRESS + '」！')
+            reply_message.append(message1)
+            message2 = TextSendMessage(
+                '請繼續點擊「商品種類數量」已填寫完整資！')
+            reply_message.append(message2)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+    except Exception as e:
+
+        print(f"Error occurred: {e}")
+        line_bot_api.reply_message(
+            event.reply_token, 
+            TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))
 
 
 """

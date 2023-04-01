@@ -14,13 +14,21 @@ from linebot import (
 from linebot.exceptions import (
     InvalidSignatureError, LineBotApiError
 )
+# Import the message type of the line bot
 from linebot.models import (
     ImagemapSendMessage, TextSendMessage,
     ImageSendMessage, LocationSendMessage,
     FlexSendMessage, VideoSendMessage,
     StickerSendMessage, AudioSendMessage,
     ImageMessage, VideoMessage,
-    AudioMessage, TextMessage
+    AudioMessage, TextMessage,
+    TemplateSendMessage, QuickReply
+)
+
+# Import the action type of the line bot
+from linebot.models import (
+    MessageTemplateAction, PostbackAction,
+    MessageAction, URIAction, QuickReplyButton
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
@@ -230,3 +238,25 @@ def handle_video_message(event) -> None:
             fd.write(chunk)
 
 
+
+@handler.add(MessageEvent, message=TextMessage)
+def handle_text_message(event) -> None:
+
+    try:
+
+        messages = find_drama_by_keyword(event.message.text)
+        if messages:
+            line_bot_api.reply_message(
+                event.reply_token, 
+                messages)
+        else:
+            line_bot_api.reply_message(
+                event.reply_token, 
+                TextSendMessage('此物件沒有劇情設計'))
+            
+    except Exception as e:
+
+        print(f"Error occurred: {e}")
+        line_bot_api.reply_message(
+            event.reply_token, 
+            TextSendMessage('我們目前還不能辨識您的這則訊息\n或許可以試試看別的內容哦～'))

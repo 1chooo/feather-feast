@@ -5,3 +5,4 @@ ai-event.log
 log/
 *.pyc
 .DS_Store
+db/dbSchema-2023-03-31.sql

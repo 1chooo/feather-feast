@@ -1,4 +1,4 @@
-import database_setting as database
+import DatabaseSetting as database
 import pymysql
 import config
 

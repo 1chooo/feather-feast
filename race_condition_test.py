@@ -1,6 +1,6 @@
-import database_setting as database
+import DatabaseSetting as database
 import threading
-import database_service as transaction
+import DatabaseService as transaction
 import time
 
 def run_transactions():
