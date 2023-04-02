@@ -32,7 +32,7 @@ ngrok http 5002
 ```
 
 
-### [Reference](./reference.md)
+### [Reference](./assets/reference.md)
 
 ### License
 Released under [MIT](./LICENSE) by @1chooo.

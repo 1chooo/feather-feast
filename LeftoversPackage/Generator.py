@@ -119,7 +119,7 @@ def buttons_template_generator_one(alt_text,
 
     return buttons_template_message
 
-def carousel_template_generator_one(
+def carousel_template_generator_three(
         alt_text, image_url, title, description, 
         label1, label1_info, label2, label2_info,
         label3, label3_info,
@@ -155,11 +155,51 @@ def carousel_template_generator_one(
     )
     return carousel_template_message
 
+def carousel_template_generator_four(
+        alt_text, image_url, title, description, 
+        label1, label1_info, label2, label2_info,
+        label3, label3_info, label4, label4_info,
+    ) -> 'TemplateSendMessage':
+    
+    carousel_template_message = TemplateSendMessage(
+        alt_text=alt_text,
+        template=CarouselTemplate(
+            columns=[
+                CarouselColumn(
+                    thumbnail_image_url=image_url,
+                    image_aspect_ratio='square',
+                    image_size='cover',
+                    title=title,
+                    text=description,
+                    actions=[
+                        MessageAction(
+                            label=label1,
+                            text=label1_info,
+                        ),
+                        MessageAction(
+                            label=label2,
+                            text=label2_info,
+                        ),
+                        MessageAction(
+                            label=label3,
+                            text=label3_info,
+                        ),
+                        MessageAction(
+                            label=label4,
+                            text=label4_info,
+                        ),
+                    ]
+                ),
+            ]
+        )
+    )
+    return carousel_template_message
 
-products_info1 = carousel_template_generator_one(
+
+products_info1 = carousel_template_generator_three(
     alt_text='Carousel template',
     image_url='https://i.imgur.com/vG4FgDX.png',
-    title='商品名稱、店家地址、商品數量種類',
+    title='店家名稱、店家地址、商品數量種類',
     description='請輸入店家詳細資訊',
     label1='店家名稱',
     label1_info='我想要輸入店家名稱',
@@ -167,6 +207,25 @@ products_info1 = carousel_template_generator_one(
     label2_info='我想要輸入店家地址',
     label3='商品種類數量',
     label3_info='我想要輸入今天欲上架商品種類數量',
+)
+
+
+"""
+
+"""
+products_info2 = carousel_template_generator_three(
+    alt_text='Carousel template',
+    image_url='https://i.imgur.com/vG4FgDX.png',
+    title='商品名稱、商品數量、商品售價',
+    description='請輸入商品詳細資訊（商品照片仍在測試階段）',
+    label1='商品名稱',
+    label1_info='我想要輸入商品名稱',
+    label2='商品數量',
+    label2_info='我想要輸入商品數量',
+    label3='商品售價',
+    label3_info='我想要輸入商品售價',
+    # label4='商品售價',
+    # label4_info='我想要輸入商品售價',
 )
 
 
@@ -178,6 +237,16 @@ policy_buttons_template_message = buttons_template_generator_two(
     label1_reply='我已詳閱使用者條款並且願意遵守',
     label2='再看看',
     label2_reply='我還不太清楚使用者條款，可以給我看看使用者條款嗎？',
+)
+
+check_store_info_buttons_template_message = buttons_template_generator_two(
+    alt_text='policy button',
+    title='請問內容是否皆正確',
+    title_info='若資料無誤將登陸資料庫中',
+    label1='正確',
+    label1_reply='以上資訊商家完全正確',
+    label2='再調整',
+    label2_reply='我還有細節要調整',
 )
 
 carousel_template_message = TemplateSendMessage(
