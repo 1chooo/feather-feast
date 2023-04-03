@@ -37,3 +37,8 @@
 
 #### JSON Viewer
 * [JSON Viewer](https://c.runoob.com/front-end/53/)
+
+
+#### Flask html
+
+* [Upload image in Flask](https://stackoverflow.com/questions/44926465/upload-image-in-flask)

@@ -31,6 +31,25 @@ python run.py
 ngrok http 5002
 ```
 
+#### Start multiple tunnel
+* with `ngrok config check` to find `ngrok.yml`.
+* Add the below code in `ngrok.yml`
+```yml
+version: "2"
+authtoken: "token"
+### 上方不需更動
+tunnels:
+  first:
+    addr: 5002
+    proto: http    
+  second:
+    addr: 5012
+    proto: http
+```
+* type `ngrok start --all` to start ngrok
+* type `image server url` into `config.image_server_host`
+* set the saving path of `image` into `config.image_folder`
+
 
 ### [Reference](./assets/reference.md)
 

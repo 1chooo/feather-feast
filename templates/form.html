@@ -1,66 +1,103 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
 
-    <body>
-        <h1>梅雨還是沒雨？</h1>
-        <form action="/submit" method="post" enctype="multipart/form-data"> 
-            <br><br>
-            <label for="content">我們是一群大氣系的學生，我們想運用大氣的知識結合機器學習的技術來預測降雨的可能性，</label><br><br>
-            <label for="content">即便如今大氣預測降雨的機率已行之有年，不過我們依舊願意嘗試新的方法，就如同其他機器學習的預測，</label><br><br>
-            <label for="content">像是我們嘗試過的鐵達尼號生存預測、房價預測、借貸評估一般，在已知的數據中，得出更接近真實情況的結果預測，</label><br><br>
-            <label for="content">以下有些天氣數值可以提供給大家使用，</label><br><br>
-            <label for="content">歡迎輸入各種數據！！！</label><br><br>
-            <br><br>
-            <label for="inputPressure">輸入氣壓值:(範圍:900.0~1050)</label>
-            <br><br>
-            <span for="currentPressure">輸入當前氣壓:</span>
-            <input type="text" id="currentPressure" name="currentPressure" value="{{currentPressure}}">
-            <span for="todayMaximumPressure">輸入本日最高氣壓:</span>
-            <input type="text" id="todayMaximumPressure" name="todayMaximumPressure" value="{{todayMaximumPressure}}">
-            <span for="todayMinimumPressure">輸入本日最低氣壓:</span>
-            <input type="text" id="todayMinimumPressure" name="todayMinimumPressure" value="{{todayMinimumPressure}}"><br><br>
-            <br><br>
-            <label for="inputTemperature">輸入溫度值:(範圍:0~40)</label>
-            <br><br>
-            <span for="currentTemperature">輸入當前氣溫值:</span>
-            <input type="text" id="currentTemperature" name="currentTemperature" value="{{currentTemperature}}">
-            <span for="todayMaximumTemperature">輸入本日最高氣溫值:</span>
-            <input type="text" id="todayMaximumTemperature" name="todayMaximumTemperature" value="{{todayMaximumTemperature}}">
-            <span for="todayMinimumTemperature">輸入本日最低氣溫值:</span>
-            <input type="text" id="todayMinimumTemperature" name="todayMinimumTemperature" value="{{todayMinimumTemperature}}"><br><br>
-            <br><br>
-            <label for="relativeHumidity">輸入相對濕度:(範圍:0~100)</label>
-            <br><br>
-            <span for="currentRelativeHumidity">輸入當前相對濕度:</span>
-            <input type="text" id="currentRelativeHumidity" name="currentRelativeHumidity" value="{{currentRelativeHumidity}}">
-            <span for="todayMinimumRelativeHumidity">輸入本日最低相對濕度:</span>
-            <input type="text" id="todayMinimumRelativeHumidity" name="todayMinimumRelativeHumidity" value="{{todayMinimumRelativeHumidity}}"><br><br>
-            <br><br>
-            <label for="wind">風</label>
-            <br><br>
-            <span for="currentWindSpeed">輸入當前風速:(範圍:0.0~10.0)</span>
-            <input type="text" id="currentWindSpeed" name="currentWindSpeed" value="{{currentWindSpeed}}">
-            <span for="currentWindDirection">輸入當前風向:(範圍:1~360)</span>
-            <input type="text" id="currentWindDirection" name="currentWindDirection" value="{{currentWindDirection}}"><br><br>
-            <br><br>
-            <label for="gustWind">陣風</label>
-            <br><br>
-            <span for="currentGustWindSpeed">輸入當前陣風風速:(範圍:0.0~100.0)</span>
-            <input type="text" id="currentGustWindSpeed" name="currentGustWindSpeed" value="{{currentGustWindSpeed}}">
-            <span for="currentGustWindDirection">輸入當前陣風風向:(範圍:1~360)</span>
-            <input type="text" id="currentGustWindDirection" name="currentGustWindDirection" value="{{currentGustWindDirection}}"><br><br>
-            <br><br>
-            <input type="submit" value="submit">
-            <br><br>
-        </form>
-        <br>
-        <div>
-            <p>評估結果：{{prediction}}</p>
-        </div>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+
+<body>
+    <h1>一食二鳥－剩食媒合平台（商家上架用）</h1>
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        <br><br>
+        <label for="content">我們是一食二鳥－剩食媒合平台</label><br><br>
+        <label for="content">我們是一食二鳥－剩食媒合平台</label><br><br>
+        <h2>請詳閱使用者政策</h2>
+        <a href="https://www.youtube.com/">這個連結</a>會連到 YouTube(測試用，可以寫個頁面放使用者政策，也可以直接放這)<br>
+        <fieldset>
+            <legend>我同意使用者條款</legend>
+        
+            <div>
+              <input type="checkbox" id="agreePolicy" name="agreePolicy" checked>
+              <label for="agreePolicy">同意</label>
+            </div>
+        
+            <div>
+              <input type="checkbox" id="disagreePolicy" name="disagreePolicy">
+              <label for="disagreePolicy">再看看</label>
+            </div>
+        </fieldset>
+        <br><br>
+        <h2 for="inputStoreName">請輸入店家資訊</h2>
+        <br><br>
+        <span for="storeName">店家名稱：</span>
+        <input type="text" id="storeName" name="storeName" value="{{STORE_NAME}}">
+        <!-- <br><br>
+        <label for="inputStoreAddress">請輸入店家地址</label> -->
+        <br><br>
+        <span for="storeAddress">店家地址：</span>
+        <input type="text" id="storeAddress" name="storeAddress" value="{{STORE_ADDRESS}}">
+        <br><br>
+        <h2 for="inputProductTypeAmount">請輸入商品資訊</h2>
+        <br><br>
+        <label for="productTypeAmount">商品種類數量：</label>
+        <select name="productTypeAmount" id="productTypeAmount">
+            <option value="1" {{PRODUCT_TYPE_AMOUNT_1}}>1</option>
+            <option value="2" {{PRODUCT_TYPE_AMOUNT_2}}>2</option>
+            <option value="3" {{PRODUCT_TYPE_AMOUNT_3}}>3</option>
+        </select>
+        <br><br>
+        <h3 for="inputFirstProductInfo">請輸入第一項商品資訊</h3>
+        <br><br>
+        <span for="firstProductName">第一項商品名稱：</span>
+        <input type="text" id="firstProductName" name="firstProductName" value="{{FIRST_PRODUCT_NAME}}">
+        <br><br>
+        <span for="firstProductAmount">第一項商品數量：</span>
+        <input type="text" id="firstProductAmount" name="firstProductAmount" value="{{FIRST_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="firstProductPrice">第一項商品售價：</span>
+        <input type="text" id="firstProductPrice" name="firstProductPrice" value="{{FIRST_PRODUCT_PRICE}}">
+        <br><br>
+        <h3 for="inputSeconeProductInfo">請輸入第二項商品資訊</h3>
+        <br><br>
+        <span for="secondProductName">第二項商品名稱：</span>
+        <input type="text" id="secondProductName" name="secondProductName" value="{{SECOND_PRODUCT_NAME}}">
+        <br><br>
+        <span for="secondProductAmount">第二項商品數量：</span>
+        <input type="text" id="secondProductAmount" name="secondProductAmount" value="{{SECOND_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="secondProductPrice">第二項商品售價：</span>
+        <input type="text" id="secondProductPrice" name="secondProductPrice" value="{{SECOND_PRODUCT_PRICE}}">
+        <br><br>
+        <h3 for="inputThirdProductInfo">請輸入第三項商品資訊</h3>
+        <br><br>
+        <span for="thirdProductName">第三項商品名稱：</span>
+        <input type="text" id="thirdProductName" name="thirdProductName" value="{{THIRD_PRODUCT_NAME}}">
+        <br><br>
+        <span for="thirdProductAmount">第三項商品數量：</span>
+        <input type="text" id="thirdProductAmount" name="thirdProductAmount" value="{{THIRD_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="thirdProductPrice">第三項商品售價：</span>
+        <input type="text" id="thirdProductPrice" name="thirdProductPrice" value="{{THIRD_PRODUCT_PRICE}}">
+        <!-- <br><br>
+        <label for="inputExpiryDate">請輸入最佳食用期限</label> -->
+        <br><br>
+        <label for="ExpiryDate">請選取最佳食用期限：</label>
+        <input id="ExpiryDate" type="datetime-local" name="ExpiryDate" value="{{EXPIRY_DATE}}">
+        <!-- <br><br>
+        <label for="inputPickupTime">請輸入最後取餐時間</label> -->
+        <br><br>
+        <label for="PickupTime">請選取最後取餐時間：</label>
+        <input id="PickupTime" type="datetime-local" name="PickupTime" value="{{PICKUP_TIME}}">
+        <br><br>
+        <input type="submit" value="submit">
+        <br><br>
+    </form>
+    <br>
+    <div>
+        <p>資訊登陸狀態：</p>
+    </div>
+</body>
+
 </html>

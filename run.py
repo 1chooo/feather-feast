@@ -9,7 +9,6 @@ import os
 from numpy import NaN
 import json
 import pandas as pd
-from numpy import NaN
 import math
 from flask import Flask, request, abort, jsonify, render_template, url_for
 import datetime
@@ -19,7 +18,6 @@ import asyncio
 import threading
 import DatabaseService
 import config
-import joblib
 
 """ Import the self-definite function """
 from LeftoversPackage import (
@@ -29,10 +27,10 @@ from LeftoversPackage import (
 """ Below is the package with Line Bot"""
 
 from linebot import (
-    LineBotApi, WebhookHandler
+    LineBotApi, WebhookHandler,
 )
 from linebot.exceptions import (
-    InvalidSignatureError, LineBotApiError
+    InvalidSignatureError, LineBotApiError,
 )
 # Import the message type of the line bot
 from linebot.models import (
@@ -42,7 +40,7 @@ from linebot.models import (
     StickerSendMessage, AudioSendMessage,
     ImageMessage, VideoMessage,
     AudioMessage, TextMessage,
-    TemplateSendMessage, QuickReply
+    TemplateSendMessage, QuickReply,
 )
 
 # Import the action type of the line bot
@@ -52,11 +50,11 @@ from linebot.models import (
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
-    ConfirmTemplate, ImageCarouselTemplate
+    ConfirmTemplate, ImageCarouselTemplate,
 )
 from linebot.models.template import *
 from linebot.models.events import (
-    FollowEvent, MessageEvent
+    FollowEvent, MessageEvent,
 )
 
 
@@ -77,7 +75,7 @@ Tools.check_dir(user_log_path)
 
 
 
-modelPretrained = joblib.load("./Precipitation_Predict.pkl")
+# modelPretrained = joblib.load("./Precipitation_Predict.pkl")
 """ start the server """
 
 app = Flask(__name__)
@@ -86,79 +84,20 @@ app = Flask(__name__)
 def formPage():
     return render_template("form.html")
 
+STORE_NAME = ''
+STORE_ADDRESS = ''
+
 @app.route("/submit", methods = ['POST'])
 def submit():
 
+    global STORE_NAME
+
     if request.method == 'POST':
         form_data = request.form
-        # print(form_data)
-
-
-        inputPressure = ""
-        relativeHumidity = ""
-        wind = ""
-        gustWind = ""
-        inputTemerature = ""
-
-        
-        result = modelPretrained.predict([[
-        int(form_data["currentPressure"]), 
-        int(form_data["todayMaximumPressure"]), 
-        int(form_data["todayMinimumPressure"]), 
-        int(form_data["currentTemperature"]), 
-        int(form_data["todayMaximumTemperature"]),
-        int(form_data["todayMinimumTemperature"]),
-        int(form_data["currentRelativeHumidity"]), 
-        int(form_data["todayMinimumRelativeHumidity"]), 
-        int(form_data["currentWindSpeed"]), 
-        int(form_data["currentWindDirection"]), 
-        int(form_data["currentGustWindSpeed"]), 
-        int(form_data["currentGustWindDirection"])
-        ]])
-
-        resultProba = modelPretrained.predict_proba([[
-        int(form_data["currentPressure"]), 
-        int(form_data["todayMaximumPressure"]), 
-        int(form_data["todayMinimumPressure"]), 
-        int(form_data["currentTemperature"]), 
-        int(form_data["todayMaximumTemperature"]),
-        int(form_data["todayMinimumTemperature"]),
-        int(form_data["currentRelativeHumidity"]), 
-        int(form_data["todayMinimumRelativeHumidity"]), 
-        int(form_data["currentWindSpeed"]), 
-        int(form_data["currentWindDirection"]), 
-        int(form_data["currentGustWindSpeed"]), 
-        int(form_data["currentGustWindDirection"])
-        ]])
-
-        print(f'Result:{result}')
-        print(f'Result_Proba:{resultProba}')
-
-        if result[0] == 1.:
-            prediction = f'會下雨哦！ - 系統信心 {resultProba[0][1]:.10f}'
-        else:
-            prediction = f'不會下雨哦！ - 系統信心 {resultProba[0][0]:.10f}'
+        print(form_data)
         
         
-        return render_template('form.html',
-        inputPressure = inputPressure,
-        currentPressure = form_data["currentPressure"],
-        todayMaximumPressure = form_data["todayMaximumPressure"],
-        todayMinimumPressure = form_data["todayMinimumPressure"],
-        inputTemerature = inputTemerature,
-        currentTemperature = form_data["currentTemperature"],
-        todayMaximumTemperature = form_data["todayMaximumTemperature"],
-        todayMinimumTemperature = form_data["todayMinimumTemperature"],
-        relativeHumidity = relativeHumidity, 
-        currentRelativeHumidity = form_data["currentRelativeHumidity"],
-        todayMinimumRelativeHumidity = form_data["todayMinimumRelativeHumidity"],
-        wind = wind,
-        currentWindSpeed = form_data["currentWindDirection"],
-        currentWindDirection = form_data["currentWindDirection"],
-        gustWind = gustWind,
-        currentGustWindSpeed = form_data["currentGustWindSpeed"],
-        currentGustWindDirection = form_data["currentGustWindDirection"],
-        prediction = prediction)
+        return render_template('form.html',)
 
 @app.route("/callback", methods=['POST'])
 def callback() -> str:
@@ -231,35 +170,13 @@ def reply_text_and_get_user_profile(event) -> None:
 
 
 
-READY_TO_GET_STORE_NAME = False
-STORE_USER_ID = ''
-STORE_NAME = ''
-READY_TO_GET_STORE_ADDRESS = False
-STORE_ADDRESS = ''
-STORE_INFO_NUM = 0  # to judge how many info user input.
-READY_TO_GET_PRODUCT_TYPE_AMOUNT = False
-PRODUCT_TYPE_AMOUNT = 0
-READY_TO_GET_PRODUCT_NAME = False
-PRODUCT_NAME = ''
-READY_TO_GET_PRODUCT_AMOUNT = False
-PRODUCT_AMOUNT = 0
-READY_TO_GET_PRODUCT_PRICE = False
-PRODUCT_PRICE = 0
-PRODUCT_INFO_NUM = 0
-
+NGROK_DOMAIN_URL = str(input('Please input your current ngrok domain:'))
+FORMS_URL = NGROK_DOMAIN_URL + '/forms'
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
 
-    global STORE_INFO_NUM
-    global READY_TO_GET_STORE_NAME, STORE_NAME
-    global READY_TO_GET_STORE_ADDRESS, STORE_ADDRESS
-    global READY_TO_GET_PRODUCT_TYPE_AMOUNT, PRODUCT_TYPE_AMOUNT
-
-    global PRODUCT_INFO_NUM
-    global READY_TO_GET_PRODUCT_NAME, PRODUCT_NAME
-    global READY_TO_GET_PRODUCT_AMOUNT, PRODUCT_AMOUNT
-    global READY_TO_GET_PRODUCT_PRICE
+    global FORMS_URL
 
     try:
 
@@ -334,191 +251,13 @@ def handle_text_message(event) -> None:
             reply_message = []
 
             message1 = TextSendMessage(
-                text='請開始依序點擊下方按鈕：\n' + 
-                '「商品名稱、店家地址、商品數量種類」\n' + 
-                '以「完整」填寫商家資訊，\n' + 
-                '這樣我們才能正確登陸商店資訊哦～')
-            reply_message.append(message1)
-            reply_message.append(Generator.products_info1)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '我想要輸入店家名稱':
-
-            READY_TO_GET_STORE_NAME = True
-
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請問您的店家名稱是？')
+                text='請點選以下連結以填寫詳細商家資訊與商品資訊\n' + 
+                FORMS_URL)
             reply_message.append(message1)
 
             line_bot_api.reply_message(
                 event.reply_token,
                 reply_message)
-        
-        elif READY_TO_GET_STORE_NAME == True:
-
-            print('準備搜集用戶商店名稱')
-            STORE_NAME = ''
-            STORE_NAME = event.message.text
-            READY_TO_GET_STORE_NAME = False
-            print('已將用戶商店名稱存入`STORE_NAME`，可以準備送進資料庫')
-            STORE_INFO_NUM += 1
-
-            reply_message = []
-            message1 = TextSendMessage(
-                '已成功收到商家名稱，\n您的商店名稱是「' + STORE_NAME + '」！')
-            reply_message.append(message1)
-            message2 = TextSendMessage(
-                '請繼續點擊「店家地址」以填寫完整資！')
-            reply_message.append(message2)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '我想要輸入店家地址':
-
-            READY_TO_GET_STORE_ADDRESS = True
-
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請問您的店家地址是？')
-            reply_message.append(message1)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif READY_TO_GET_STORE_ADDRESS == True:
-
-            print('準備搜集用戶商店地址')
-            STORE_ADDRESS = ''
-            STORE_ADDRESS = event.message.text
-            READY_TO_GET_STORE_ADDRESS = False
-            print('已將用戶商店地址存入`STORE_ADDRESS`，可以準備送進資料庫')
-            STORE_INFO_NUM += 1
-
-            reply_message = []
-            message1 = TextSendMessage(
-                '已成功收到商家地址，\n您的商店地址是「' + STORE_ADDRESS + '」！')
-            reply_message.append(message1)
-            message2 = TextSendMessage(
-                '請繼續點擊「商品種類數量」以填寫完整資！')
-            reply_message.append(message2)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '我想要輸入今天欲上架商品種類數量':
-
-            READY_TO_GET_PRODUCT_TYPE_AMOUNT = True
-
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請問今日欲上架的商品種類為多少種？')
-            reply_message.append(message1)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif READY_TO_GET_PRODUCT_TYPE_AMOUNT == True:
-
-            """__Still need to research__
-                === Need to change the type of `event.message.text` ===
-                This will occur the error that cannot be printed in `TextSendMessage()`
-                PRODUCT_TYPE_AMOUNT = int(PRODUCT_TYPE_AMOUNT)      
-            """
-            
-            print('準備搜集用戶今日欲上架的商品種類數量')
-            PRODUCT_TYPE_AMOUNT = ''
-            PRODUCT_TYPE_AMOUNT = event.message.text
-            READY_TO_GET_PRODUCT_TYPE_AMOUNT = False
-            print('已將用戶用戶今日欲上架的商品種類數量存入`PRODUCT_TYPE_AMOUNT`，可以準備送進資料庫')
-            STORE_INFO_NUM += 1
-            
-
-            reply_message = []
-            message1 = TextSendMessage(
-                '已成功收到商家地址，\n您今日欲上架的商品種類數量是「' + PRODUCT_TYPE_AMOUNT + '」！')
-            reply_message.append(message1)
-            message2 = TextSendMessage(
-                '最後與您確認已收到的店家資訊為如下：\n' +
-                '店家名稱：\n' +
-                STORE_NAME + '\n' +
-                '店家地址：\n' +
-                STORE_ADDRESS + '\n' +
-                '商品種類數量：' + 
-                PRODUCT_TYPE_AMOUNT)
-            reply_message.append(message2)
-            reply_message.append(Generator.check_store_info_buttons_template_message)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '我還有細節要調整':
-
-            STORE_INFO_NUM = 0
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請重新依序依序點擊下方按鈕：\n' + 
-                '「店家名稱、店家地址、商品數量種類」\n' + 
-                '以「完整」填寫商家資訊，\n' + 
-                '這樣我們才能正確登陸商店資訊哦～')
-            reply_message.append(message1)
-            reply_message.append(Generator.products_info1)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '以上資訊商家完全正確':
-
-            """__Still need to research__
-                === if the carousel_template action equal to 4 ===
-                This will occur the error that cannot send the 
-                message to the user. (500)
-
-               __How to Solve in the current method__
-               Ask the user whether they want to upload the Image.
-               Therefore, judge the statement independently.  
-            """
-
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請開始依序依序點擊下方按鈕：\n' + 
-                '「商品名稱、商品數量、商品單價」\n' + 
-                '以「完整」填寫商品資訊，\n' + 
-                '這樣我們才能正確登陸商品資訊哦～')
-            reply_message.append(message1)
-            reply_message.append(Generator.products_info2)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-            
-        elif (event.message.text) == '我想要輸入商品名稱':
-
-            reply_message = []
-
-            message1 = TextSendMessage(
-                text='請問您的商品名稱是？')
-            reply_message.append(message1)
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                reply_message)
-        
             
         else :
 
