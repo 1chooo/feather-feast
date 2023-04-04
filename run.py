@@ -80,24 +80,195 @@ Tools.check_dir(user_log_path)
 
 app = Flask(__name__)
 
-@app.route('/forms')
+@app.route('/api')
 def formPage():
     return render_template("form.html")
 
+
+# YES = False
+# NO = False
+YES = ''
+NO = ''
+CHECK_POLICY = False
 STORE_NAME = ''
 STORE_ADDRESS = ''
+PRODUCT_TYPE_AMOUNT = 0
+PRODUCT_TYPE_AMOUNT_1 = ''
+PRODUCT_TYPE_AMOUNT_2 = ''
+PRODUCT_TYPE_AMOUNT_3 = ''
+FIRST_PRODUCT_NAME = ''
+FIRST_PRODUCT_AMOUNT = 0
+FIRST_PRODUCT_PRICE = 0
+SECOND_PRODUCT_NAME = ''
+SECOND_PRODUCT_AMOUNT = 0
+SECOND_PRODUCT_PRICE = 0
+THIRD_PRODUCT_NAME = ''
+THIRD_PRODUCT_AMOUNT = 0
+THIRD_PRODUCT_PRICE = 0
+EXPIRY_DATE = ''
+PICKUP_TIME = ''
+STATUS = ''
 
 @app.route("/submit", methods = ['POST'])
 def submit():
 
+    global YES
+    global NO
+    global CHECK_POLICY
     global STORE_NAME
+    global STORE_ADDRESS
+    global PRODUCT_TYPE_AMOUNT
+    global PRODUCT_TYPE_AMOUNT_1
+    global PRODUCT_TYPE_AMOUNT_2
+    global PRODUCT_TYPE_AMOUNT_3
+    global FIRST_PRODUCT_NAME
+    global FIRST_PRODUCT_AMOUNT
+    global FIRST_PRODUCT_PRICE
+    global SECOND_PRODUCT_NAME
+    global SECOND_PRODUCT_AMOUNT
+    global SECOND_PRODUCT_PRICE
+    global THIRD_PRODUCT_NAME
+    global THIRD_PRODUCT_AMOUNT
+    global THIRD_PRODUCT_PRICE
+    global EXPIRY_DATE
+    global PICKUP_TIME
+    global STATUS
 
     if request.method == 'POST':
+
+        """__TypeError Checking__
+            Add try except to alert the users.
+        """
         form_data = request.form
+
         print(form_data)
+
+        """__Data Type__
+        ImmutableMultiDict([
+            ('CHECK_POLICY', '1'), 
+            ('STORE_NAME', '苦苦'), 
+            ('STORE_ADDRESS', '苦苦'), 
+            ('productTypeAmount', '3'), 
+            ('FIRST_PRODUCT_NAME', '苦苦'), 
+            ('FIRST_PRODUCT_AMOUNT', '12'), 
+            ('FIRST_PRODUCT_PRICE', '123'), 
+            ('SECOND_PRODUCT_NAME', '苦苦'), 
+            ('SECOND_PRODUCT_AMOUNT', '11'), 
+            ('SECOND_PRODUCT_PRICE', '2736'), 
+            ('THIRD_PRODUCT_NAME', '苦苦'), 
+            ('THIRD_PRODUCT_AMOUNT', '236'), 
+            ('THIRD_PRODUCT_PRICE', '737'), 
+            ('EXPIRY_DATE', '2023-04-04T16:46'), 
+            ('PICKUP_TIME', '2023-04-04T16:46')]
+        )
+        """
+
+        # Policy
+        YES = ''
+        NO = ''
+        if int(form_data['CHECK_POLICY'])== 1:
+            YES = 'checked'
+        else:
+            NO = 'checked'
+
         
+
+        STORE_NAME = str(form_data['STORE_NAME'])
+        STORE_ADDRESS = str(form_data['STORE_ADDRESS'])
+
+        if int(form_data['productTypeAmount']) == 1:
+            PRODUCT_TYPE_AMOUNT_1 = 'selected'
+        elif int(form_data['productTypeAmount']) == 2:
+            PRODUCT_TYPE_AMOUNT_2 = 'selected'
+        elif int(form_data['productTypeAmount']) == 3:
+            PRODUCT_TYPE_AMOUNT_3 = 'selected'
+
+        PRODUCT_TYPE_AMOUNT = int(form_data['productTypeAmount'])
+
+        FIRST_PRODUCT_NAME = str(form_data['FIRST_PRODUCT_NAME'])
+        FIRST_PRODUCT_AMOUNT = int(form_data['FIRST_PRODUCT_AMOUNT'])
+        FIRST_PRODUCT_PRICE = int(form_data['FIRST_PRODUCT_PRICE'])
+
+        SECOND_PRODUCT_NAME = str(form_data['SECOND_PRODUCT_NAME'])
+        SECOND_PRODUCT_AMOUNT = int(form_data['SECOND_PRODUCT_AMOUNT'])
+        SECOND_PRODUCT_PRICE = int(form_data['SECOND_PRODUCT_PRICE'])
+
+        THIRD_PRODUCT_NAME = str(form_data['THIRD_PRODUCT_NAME'])
+        THIRD_PRODUCT_AMOUNT = int(form_data['THIRD_PRODUCT_AMOUNT'])
+        THIRD_PRODUCT_PRICE = int(form_data['THIRD_PRODUCT_PRICE'])
+
+        EXPIRY_DATE = str(form_data['EXPIRY_DATE'])
+        PICKUP_TIME = str(form_data['PICKUP_TIME'])
+
+        if NO == 'checked':
+
+            STATUS = f'請先同意使用者條款' 
+
+        if YES == 'checked':
+
+            STATUS = ''
+            STATUS = f'商家名稱：{STORE_NAME}\n\
+                       商家地址：{STORE_ADDRESS}\n\
+                       商品種類數量：{PRODUCT_TYPE_AMOUNT}\n\
+                       第一項商品資訊：\n\
+                       第一項商品名稱：{FIRST_PRODUCT_NAME}\n\
+                       第一項商品數量：{FIRST_PRODUCT_AMOUNT}\n\
+                       第一項商品售價：{FIRST_PRODUCT_PRICE}\n\
+                       第二項商品資訊：\n\
+                       第二項商品名稱：{SECOND_PRODUCT_NAME}\n\
+                       第二項商品數量：{SECOND_PRODUCT_AMOUNT}\n\
+                       第二項商品售價：{SECOND_PRODUCT_PRICE}\n\
+                       第三項商品資訊：\n\
+                       第三項商品名稱：{THIRD_PRODUCT_NAME}\n\
+                       第三項商品數量：{THIRD_PRODUCT_AMOUNT}\n\
+                       第三項商品售價：{THIRD_PRODUCT_PRICE}\n\
+                       最佳食用期限：{EXPIRY_DATE}\n\
+                       最後取餐時間：{PICKUP_TIME}\n'
+            
+
+        # STATUS = ''
+        # STATUS = '商家名稱：' + STORE_NAME + '\n'
+        # STATUS += '商家地址：' + STORE_ADDRESS + '\n'
+        # STATUS += '商品種類數量：' + PRODUCT_TYPE_AMOUNT + '\n'
+        # STATUS += '第一項商品資訊：\n'
+        # STATUS += '第一項商品名稱：' + FIRST_PRODUCT_NAME + '\n'
+        # STATUS += '第一項商品數量：' + FIRST_PRODUCT_AMOUNT + '\n'
+        # STATUS += '第一項商品售價：' + FIRST_PRODUCT_PRICE + '\n'
+        # STATUS += '第二項商品資訊：\n'
+        # STATUS += '第二項商品名稱：' + SECOND_PRODUCT_NAME + '\n'
+        # STATUS += '第二項商品數量：' + SECOND_PRODUCT_AMOUNT + '\n'
+        # STATUS += '第二項商品售價：' + SECOND_PRODUCT_PRICE + '\n'
+        # STATUS += '第三項商品資訊：\n'
+        # STATUS += '第三項商品名稱：' + THIRD_PRODUCT_NAME + '\n'
+        # STATUS += '第三項商品數量：' + THIRD_PRODUCT_AMOUNT + '\n'
+        # STATUS += '第三項商品售價：' + THIRD_PRODUCT_PRICE + '\n'
+        # STATUS += '最佳食用期限：' + EXPIRY_DATE + '\n'
+        # STATUS += '最後取餐時間：' + PICKUP_TIME + '\n'
+        # print(STATUS)
         
-        return render_template('form.html',)
+        return render_template(
+            'form.html',
+            YES = YES, 
+            NO = NO, 
+            STORE_NAME = STORE_NAME,
+            STORE_ADDRESS = STORE_ADDRESS,
+            PRODUCT_TYPE_AMOUNT_1 = PRODUCT_TYPE_AMOUNT_1,
+            PRODUCT_TYPE_AMOUNT_2 = PRODUCT_TYPE_AMOUNT_2,
+            PRODUCT_TYPE_AMOUNT_3 = PRODUCT_TYPE_AMOUNT_3,
+            FIRST_PRODUCT_NAME = FIRST_PRODUCT_NAME,
+            FIRST_PRODUCT_AMOUNT = FIRST_PRODUCT_AMOUNT,
+            FIRST_PRODUCT_PRICE = FIRST_PRODUCT_PRICE,
+            SECOND_PRODUCT_NAME = SECOND_PRODUCT_NAME,
+            SECOND_PRODUCT_AMOUNT = SECOND_PRODUCT_AMOUNT,
+            SECOND_PRODUCT_PRICE = SECOND_PRODUCT_PRICE,
+            THIRD_PRODUCT_NAME = THIRD_PRODUCT_NAME,
+            THIRD_PRODUCT_AMOUNT = THIRD_PRODUCT_AMOUNT,
+            THIRD_PRODUCT_PRICE = THIRD_PRODUCT_PRICE,
+            EXPIRY_DATE = EXPIRY_DATE,
+            PICKUP_TIME = PICKUP_TIME,
+            STATUS = STATUS,
+        )
+
 
 @app.route("/callback", methods=['POST'])
 def callback() -> str:
@@ -168,10 +339,17 @@ def reply_text_and_get_user_profile(event) -> None:
     #     TextSendMessage('安安，我們成功成為好友了！')
     # )
 
+NGROK_DOMAIN_URL = ''
 
+def getDomainUrl():
 
-NGROK_DOMAIN_URL = str(input('Please input your current ngrok domain:'))
-FORMS_URL = NGROK_DOMAIN_URL + '/forms'
+    NGROK_DOMAIN_URL = str(input('Please input your current ngrok domain: '))
+
+    return NGROK_DOMAIN_URL
+
+NGROK_DOMAIN_URL = getDomainUrl()
+
+FORMS_URL = NGROK_DOMAIN_URL + '/api'
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:

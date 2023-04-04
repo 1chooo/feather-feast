@@ -5,6 +5,94 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+    <style>
+        body {
+            font-size: 50px;
+        }
+
+        input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        form {
+            padding: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        legend {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="datetime-local"] {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            /* width: 200px; */
+        }
+
+        /* 增加CSS設定 */
+        /* #agreePolicy,
+        #disagreePolicy {
+            margin-right: 0.5rem;
+        } */
+
+        /* 增加RWD設定 */
+        @media screen and (max-width: 768px) {
+            body {
+                font-size: 30px;
+            }
+
+            form {
+                padding: 0.5rem;
+            }
+
+            input[type="text"],
+            select {
+                font-size: 0.8rem;
+            }
+
+            input[type="datetime-local"] {
+                width: 100%;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+            }
+
+            #ExpiryDate {
+                width: 100%;
+            }
+
+            #PickupTime {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -15,29 +103,35 @@
         <label for="content">我們是一食二鳥－剩食媒合平台</label><br><br>
         <h2>請詳閱使用者政策</h2>
         <a href="https://www.youtube.com/">這個連結</a>會連到 YouTube(測試用，可以寫個頁面放使用者政策，也可以直接放這)<br>
-        <fieldset>
-            <legend>我同意使用者條款</legend>
-        
-            <div>
-              <input type="checkbox" id="agreePolicy" name="agreePolicy" checked>
-              <label for="agreePolicy">同意</label>
-            </div>
-        
-            <div>
-              <input type="checkbox" id="disagreePolicy" name="disagreePolicy">
-              <label for="disagreePolicy">再看看</label>
-            </div>
-        </fieldset>
         <br><br>
-        <h2 for="inputStoreName">請輸入店家資訊</h2>
+        <!-- <label for="policy">我同意使用者條款</label> -->
+        <!-- <label for="agreePolicy">同意</label>
+        <input type="checkbox" id="agreePolicy" name="agreePolicy" checked>
+        <label for="disagreePolicy">再看看</label>
+        <input type="checkbox" id="disagreePolicy" name="disagreePolicy"> -->
+
+        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}><label for="YES">我已閱讀並同意上述條款和條件</label>
+        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}><label for="NO">我還想再閱讀使用者條款</label>
+
+        <!-- <label>
+            <input type="checkbox" name="agreePolicy" value="{{YES}}" style="width:40px;height:40px;">
+            我已閱讀並同意上述條款和條件
+        </label>
+        <label>
+            <input type="checkbox" name="disagreePolicy" value="{{NO}}" style="width:40px;height:40px;">
+            我還想再閱讀使用者條款
+        </label> -->
+
         <br><br>
-        <span for="storeName">店家名稱：</span>
-        <input type="text" id="storeName" name="storeName" value="{{STORE_NAME}}">
+        <h2 for="inputStoreName">請輸入商家資訊</h2>
+        <br><br>
+        <span for="STORE_NAME">商家名稱：</span>
+        <input type="text" id="STORE_NAME" name="STORE_NAME" value="{{STORE_NAME}}">
         <!-- <br><br>
-        <label for="inputStoreAddress">請輸入店家地址</label> -->
+        <label for="inputStoreAddress">請輸入商家地址</label> -->
         <br><br>
-        <span for="storeAddress">店家地址：</span>
-        <input type="text" id="storeAddress" name="storeAddress" value="{{STORE_ADDRESS}}">
+        <span for="STORE_ADDRESS">商家地址：</span>
+        <input type="text" id="STORE_ADDRESS" name="STORE_ADDRESS" value="{{STORE_ADDRESS}}">
         <br><br>
         <h2 for="inputProductTypeAmount">請輸入商品資訊</h2>
         <br><br>
@@ -50,54 +144,56 @@
         <br><br>
         <h3 for="inputFirstProductInfo">請輸入第一項商品資訊</h3>
         <br><br>
-        <span for="firstProductName">第一項商品名稱：</span>
-        <input type="text" id="firstProductName" name="firstProductName" value="{{FIRST_PRODUCT_NAME}}">
+        <span for="FIRST_PRODUCT_NAME">第一項商品名稱：</span>
+        <input type="text" id="FIRST_PRODUCT_NAME" name="FIRST_PRODUCT_NAME" value="{{FIRST_PRODUCT_NAME}}">
         <br><br>
-        <span for="firstProductAmount">第一項商品數量：</span>
-        <input type="text" id="firstProductAmount" name="firstProductAmount" value="{{FIRST_PRODUCT_AMOUNT}}">
+        <span for="FIRST_PRODUCT_AMOUNT">第一項商品數量：</span>
+        <input type="text" id="FIRST_PRODUCT_AMOUNT" name="FIRST_PRODUCT_AMOUNT" value="{{FIRST_PRODUCT_AMOUNT}}">
         <br><br>
-        <span for="firstProductPrice">第一項商品售價：</span>
-        <input type="text" id="firstProductPrice" name="firstProductPrice" value="{{FIRST_PRODUCT_PRICE}}">
+        <span for="FIRST_PRODUCT_PRICE">第一項商品售價：</span>
+        <input type="text" id="FIRST_PRODUCT_PRICE" name="FIRST_PRODUCT_PRICE" value="{{FIRST_PRODUCT_PRICE}}">
         <br><br>
         <h3 for="inputSeconeProductInfo">請輸入第二項商品資訊</h3>
         <br><br>
-        <span for="secondProductName">第二項商品名稱：</span>
-        <input type="text" id="secondProductName" name="secondProductName" value="{{SECOND_PRODUCT_NAME}}">
+        <span for="SECOND_PRODUCT_NAME">第二項商品名稱：</span>
+        <input type="text" id="SECOND_PRODUCT_NAME" name="SECOND_PRODUCT_NAME" value="{{SECOND_PRODUCT_NAME}}">
         <br><br>
-        <span for="secondProductAmount">第二項商品數量：</span>
-        <input type="text" id="secondProductAmount" name="secondProductAmount" value="{{SECOND_PRODUCT_AMOUNT}}">
+        <span for="SECOND_PRODUCT_AMOUNT">第二項商品數量：</span>
+        <input type="text" id="SECOND_PRODUCT_AMOUNT" name="SECOND_PRODUCT_AMOUNT" value="{{SECOND_PRODUCT_AMOUNT}}">
         <br><br>
-        <span for="secondProductPrice">第二項商品售價：</span>
-        <input type="text" id="secondProductPrice" name="secondProductPrice" value="{{SECOND_PRODUCT_PRICE}}">
+        <span for="SECOND_PRODUCT_PRICE">第二項商品售價：</span>
+        <input type="text" id="SECOND_PRODUCT_PRICE" name="SECOND_PRODUCT_PRICE" value="{{SECOND_PRODUCT_PRICE}}">
         <br><br>
         <h3 for="inputThirdProductInfo">請輸入第三項商品資訊</h3>
         <br><br>
-        <span for="thirdProductName">第三項商品名稱：</span>
-        <input type="text" id="thirdProductName" name="thirdProductName" value="{{THIRD_PRODUCT_NAME}}">
+        <span for="THIRD_PRODUCT_NAME">第三項商品名稱：</span>
+        <input type="text" id="THIRD_PRODUCT_NAME" name="THIRD_PRODUCT_NAME" value="{{THIRD_PRODUCT_NAME}}">
         <br><br>
-        <span for="thirdProductAmount">第三項商品數量：</span>
-        <input type="text" id="thirdProductAmount" name="thirdProductAmount" value="{{THIRD_PRODUCT_AMOUNT}}">
+        <span for="THIRD_PRODUCT_AMOUNT">第三項商品數量：</span>
+        <input type="text" id="THIRD_PRODUCT_AMOUNT" name="THIRD_PRODUCT_AMOUNT" value="{{THIRD_PRODUCT_AMOUNT}}">
         <br><br>
-        <span for="thirdProductPrice">第三項商品售價：</span>
-        <input type="text" id="thirdProductPrice" name="thirdProductPrice" value="{{THIRD_PRODUCT_PRICE}}">
+        <span for="THIRD_PRODUCT_PRICE">第三項商品售價：</span>
+        <input type="text" id="THIRD_PRODUCT_PRICE" name="THIRD_PRODUCT_PRICE" value="{{THIRD_PRODUCT_PRICE}}">
         <!-- <br><br>
         <label for="inputExpiryDate">請輸入最佳食用期限</label> -->
         <br><br>
-        <label for="ExpiryDate">請選取最佳食用期限：</label>
-        <input id="ExpiryDate" type="datetime-local" name="ExpiryDate" value="{{EXPIRY_DATE}}">
+        <label for="EXPIRY_DATE">請選取最佳食用期限：</label>
+        <input id="EXPIRY_DATE" type="datetime-local" name="EXPIRY_DATE" value="{{EXPIRY_DATE}}"
+            style="width:700px;height:40px;">
         <!-- <br><br>
         <label for="inputPickupTime">請輸入最後取餐時間</label> -->
         <br><br>
-        <label for="PickupTime">請選取最後取餐時間：</label>
-        <input id="PickupTime" type="datetime-local" name="PickupTime" value="{{PICKUP_TIME}}">
+        <label for="PICKUP_TIME">請選取最後取餐時間：</label>
+        <input id="PICKUP_TIME" type="datetime-local" name="PICKUP_TIME" value="{{PICKUP_TIME}}"
+            style="width:700px;height:40px;">
         <br><br>
         <input type="submit" value="submit">
         <br><br>
+        <label>資訊登陸狀態：{{STATUS}}</label>
     </form>
     <br>
-    <div>
-        <p>資訊登陸狀態：</p>
-    </div>
+    <!-- <div> -->
+    <!-- </div> -->
 </body>
 
 </html>
