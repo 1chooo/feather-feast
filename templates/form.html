@@ -55,6 +55,20 @@
             /* width: 200px; */
         }
 
+        input[type="radio"] {
+            transform: scale(3);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .radio-group label {
+            margin-left: 10px;
+        }
+
         /* 增加CSS設定 */
         /* #agreePolicy,
         #disagreePolicy {
@@ -91,6 +105,11 @@
             #PickupTime {
                 width: 100%;
             }
+
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
@@ -110,8 +129,16 @@
         <label for="disagreePolicy">再看看</label>
         <input type="checkbox" id="disagreePolicy" name="disagreePolicy"> -->
 
-        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}><label for="YES">我已閱讀並同意上述條款和條件</label>
-        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}><label for="NO">我還想再閱讀使用者條款</label>
+        <!-- <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}><label
+            for="YES">我已閱讀並同意上述條款和條件</label>
+        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}><label for="NO">我還想再閱讀使用者條款</label> -->
+
+        <div class="radio-group">
+            <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}>
+            <label for="CHECK_POLICY_YES">我已閱讀並同意上述條款和條件</label>
+            <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}>
+            <label for="CHECK_POLICY_NO">我還想再閱讀使用者條款</label>
+        </div>
 
         <!-- <label>
             <input type="checkbox" name="agreePolicy" value="{{YES}}" style="width:40px;height:40px;">

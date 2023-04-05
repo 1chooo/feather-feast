@@ -80,7 +80,7 @@ Tools.check_dir(user_log_path)
 
 app = Flask(__name__)
 
-@app.route('/api')
+@app.route('/launch_products')
 def formPage():
     return render_template("form.html")
 
@@ -93,9 +93,6 @@ CHECK_POLICY = False
 STORE_NAME = ''
 STORE_ADDRESS = ''
 PRODUCT_TYPE_AMOUNT = 0
-PRODUCT_TYPE_AMOUNT_1 = ''
-PRODUCT_TYPE_AMOUNT_2 = ''
-PRODUCT_TYPE_AMOUNT_3 = ''
 FIRST_PRODUCT_NAME = ''
 FIRST_PRODUCT_AMOUNT = 0
 FIRST_PRODUCT_PRICE = 0
@@ -110,28 +107,24 @@ PICKUP_TIME = ''
 STATUS = ''
 
 @app.route("/submit", methods = ['POST'])
-def submit():
+def submit() -> str:
 
     global YES
     global NO
     global CHECK_POLICY
+
     global STORE_NAME
     global STORE_ADDRESS
+
     global PRODUCT_TYPE_AMOUNT
-    global PRODUCT_TYPE_AMOUNT_1
-    global PRODUCT_TYPE_AMOUNT_2
-    global PRODUCT_TYPE_AMOUNT_3
-    global FIRST_PRODUCT_NAME
-    global FIRST_PRODUCT_AMOUNT
-    global FIRST_PRODUCT_PRICE
-    global SECOND_PRODUCT_NAME
-    global SECOND_PRODUCT_AMOUNT
-    global SECOND_PRODUCT_PRICE
-    global THIRD_PRODUCT_NAME
-    global THIRD_PRODUCT_AMOUNT
-    global THIRD_PRODUCT_PRICE
+
+    global FIRST_PRODUCT_NAME, FIRST_PRODUCT_AMOUNT, FIRST_PRODUCT_PRICE
+    global SECOND_PRODUCT_NAME, SECOND_PRODUCT_AMOUNT, SECOND_PRODUCT_PRICE
+    global THIRD_PRODUCT_NAME, THIRD_PRODUCT_AMOUNT, THIRD_PRODUCT_PRICE
+
     global EXPIRY_DATE
     global PICKUP_TIME
+
     global STATUS
 
     if request.method == 'POST':
@@ -171,17 +164,8 @@ def submit():
         else:
             NO = 'checked'
 
-        
-
         STORE_NAME = str(form_data['STORE_NAME'])
         STORE_ADDRESS = str(form_data['STORE_ADDRESS'])
-
-        if int(form_data['productTypeAmount']) == 1:
-            PRODUCT_TYPE_AMOUNT_1 = 'selected'
-        elif int(form_data['productTypeAmount']) == 2:
-            PRODUCT_TYPE_AMOUNT_2 = 'selected'
-        elif int(form_data['productTypeAmount']) == 3:
-            PRODUCT_TYPE_AMOUNT_3 = 'selected'
 
         PRODUCT_TYPE_AMOUNT = int(form_data['productTypeAmount'])
 
@@ -252,9 +236,6 @@ def submit():
             NO = NO, 
             STORE_NAME = STORE_NAME,
             STORE_ADDRESS = STORE_ADDRESS,
-            PRODUCT_TYPE_AMOUNT_1 = PRODUCT_TYPE_AMOUNT_1,
-            PRODUCT_TYPE_AMOUNT_2 = PRODUCT_TYPE_AMOUNT_2,
-            PRODUCT_TYPE_AMOUNT_3 = PRODUCT_TYPE_AMOUNT_3,
             FIRST_PRODUCT_NAME = FIRST_PRODUCT_NAME,
             FIRST_PRODUCT_AMOUNT = FIRST_PRODUCT_AMOUNT,
             FIRST_PRODUCT_PRICE = FIRST_PRODUCT_PRICE,
@@ -339,22 +320,52 @@ def reply_text_and_get_user_profile(event) -> None:
     #     TextSendMessage('安安，我們成功成為好友了！')
     # )
 
-NGROK_DOMAIN_URL = ''
+SERVER_DOMAIN_URL = ''
+IMAGE_SERVER_DOMAIN_URL = ''
 
-def getDomainUrl():
 
-    NGROK_DOMAIN_URL = str(input('Please input your current ngrok domain: '))
+def getDomainUrl(SERVER_DOMAIN_URL) -> str:
 
-    return NGROK_DOMAIN_URL
+    SERVER_DOMAIN_URL = str(input('Please input your current server domain: '))
 
-NGROK_DOMAIN_URL = getDomainUrl()
+    return SERVER_DOMAIN_URL
 
-FORMS_URL = NGROK_DOMAIN_URL + '/api'
+
+def getImageDomainUrl(IMAGE_SERVER_DOMAIN_URL) -> str:
+
+    IMAGE_SERVER_DOMAIN_URL = str(input('Please input your current IMAGE server domain: '))
+
+    return IMAGE_SERVER_DOMAIN_URL
+
+SERVER_DOMAIN_URL = getDomainUrl(SERVER_DOMAIN_URL)
+
+FORMS_URL = SERVER_DOMAIN_URL + '/launch_products'
+
+STORE_USER_ID = ''
+UPDATE_STORE_INFO_TO_DB = False
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
 
     global FORMS_URL
+    global CHECK_POLICY
+    global STORE_NAME
+    global STORE_ADDRESS
+
+    global PRODUCT_TYPE_AMOUNT
+    global PRODUCT_TYPE_AMOUNT_1
+    global PRODUCT_TYPE_AMOUNT_2
+    global PRODUCT_TYPE_AMOUNT_3
+
+    global FIRST_PRODUCT_NAME, FIRST_PRODUCT_AMOUNT, FIRST_PRODUCT_PRICE
+    global SECOND_PRODUCT_NAME, SECOND_PRODUCT_AMOUNT, SECOND_PRODUCT_PRICE
+    global THIRD_PRODUCT_NAME, THIRD_PRODUCT_AMOUNT, THIRD_PRODUCT_PRICE
+
+    global EXPIRY_DATE
+    global PICKUP_TIME
+
+    global STORE_USER_ID
+    global UPDATE_STORE_INFO_TO_DB
 
     try:
 
@@ -393,12 +404,12 @@ def handle_text_message(event) -> None:
                 reply_message)
 
             
-        elif (event.message.text) == '我要成為商家':
+        elif (event.message.text) == '我要成為商家上架商品':
 
             reply_message = []
 
             message1 = TextSendMessage(
-                text='在成為商家前，需要確認您是否同意遵守我們的使用者條款呢？')
+                text='在成為商家上架商品前，需要確認您是否同意遵守我們的使用者條款呢？')
             reply_message.append(message1)
             reply_message.append(
                 Generator.policy_buttons_template_message)
@@ -429,13 +440,163 @@ def handle_text_message(event) -> None:
             reply_message = []
 
             message1 = TextSendMessage(
-                text='請點選以下連結以填寫詳細商家資訊與商品資訊\n' + 
-                FORMS_URL)
+                text='請點選「以下連結」，' + 
+                '進入連結後點選「藍色按鈕——Visit Site」' + 
+                '，以填寫詳細商家資訊與商品資訊！')
             reply_message.append(message1)
+            message2 = TextSendMessage(FORMS_URL)
+            reply_message.append(message2)
+            reply_message.append(
+                Generator.check_launch_buttons_template_message)
 
             line_bot_api.reply_message(
                 event.reply_token,
                 reply_message)
+            
+        elif (event.message.text) == '我已完成填寫商品登錄連結！':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='您的商家名稱是：' + 
+                STORE_NAME +
+                '\n您的商家地址是：' +
+                STORE_ADDRESS +
+                '\n您今日欲上架商品種類數量：' +
+                str(PRODUCT_TYPE_AMOUNT))
+            reply_message.append(message1)
+            message2 = TextSendMessage(
+                text='第一項商品資訊：\n---\n' +
+                '第一項商品名稱：' + FIRST_PRODUCT_NAME + '\n' +
+                '第一項商品數量：' + str(FIRST_PRODUCT_AMOUNT) + '\n' +
+                '第一項商品售價：' + str(FIRST_PRODUCT_PRICE) + '\n' +
+                '第二項商品資訊：\n---\n' +
+                '第二項商品名稱：' + SECOND_PRODUCT_NAME + '\n' +
+                '第二項商品數量：' + str(SECOND_PRODUCT_AMOUNT) + '\n' +
+                '第二項商品售價：' + str(SECOND_PRODUCT_PRICE) + '\n' +
+                '第三項商品資訊：\n---\n' +
+                '第三項商品名稱：' + THIRD_PRODUCT_NAME + '\n' +
+                '第三項商品數量：' + str(THIRD_PRODUCT_AMOUNT) + '\n' +
+                '第三項商品售價：' + str(THIRD_PRODUCT_PRICE))
+            reply_message.append(message2)
+
+            """ __message words limits__
+                if happened, use the below comment code.
+            """
+            # message2 = TextSendMessage(
+            #     text='第一項商品資訊：\n' +
+            #     '第一項商品名稱：' + FIRST_PRODUCT_NAME + '\n' +
+            #     '第一項商品數量：' + str(FIRST_PRODUCT_AMOUNT) + '\n' +
+            #     '第一項商品售價：' + str(FIRST_PRODUCT_PRICE))
+            # reply_message.append(message2)
+            # message3 = TextSendMessage(
+            #     text='第二項商品資訊：\n' +
+            #     '第二項商品名稱' + SECOND_PRODUCT_NAME + '\n' +
+            #     '第二項商品數量' + str(SECOND_PRODUCT_AMOUNT) + '\n' +
+            #     '第二項商品售價' + str(SECOND_PRODUCT_PRICE))
+            # reply_message.append(message3)
+            # message4 = TextSendMessage(
+            #     text='第三項商品資訊：\n' +
+            #     '第三項商品名稱' + THIRD_PRODUCT_NAME + '\n' +
+            #     '第三項商品數量' + str(THIRD_PRODUCT_AMOUNT) + '\n' +
+            #     '第三項商品售價' + str(THIRD_PRODUCT_PRICE) + '\n')
+            # reply_message.append(message4)
+            message5 = TextSendMessage(
+                text='最佳食用期限：' +
+                EXPIRY_DATE + '\n' +
+                '最後取餐時間：' +
+                PICKUP_TIME)
+            reply_message.append(message5)
+
+            reply_message.append(
+                Generator.check_store_info_buttons_template_message)
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+
+
+        elif (event.message.text) == '我馬上就會填完連結！':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請點選「以下連結」，' + 
+                '進入連結後點選「藍色按鈕——Visit Site」' + 
+                '，以填寫詳細商家資訊與商品資訊！')
+            reply_message.append(message1)
+            message2 = TextSendMessage(FORMS_URL)
+            reply_message.append(message2)
+            reply_message.append(
+                Generator.check_launch_buttons_template_message)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我還有細節要調整':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請重新點選「以下連結」，' + 
+                '進入連結後點選「藍色按鈕——Visit Site」' + 
+                '，以修改商家資訊與商品資訊！')
+            reply_message.append(message1)
+            message2 = TextSendMessage(FORMS_URL)
+            reply_message.append(message2)
+            reply_message.append(
+                Generator.check_launch_buttons_template_message)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '以上商家資訊完全正確，請將資料登錄資料庫':
+
+            UPDATE_STORE_INFO_TO_DB = True
+
+            # Get complete store info to fulfill the format of data
+            # in our database.
+            STORE_USER_ID = (event.source.user_id)
+            # profile = line_bot_api.get_profile(STORE_USER_ID)
+            # print(profile)
+
+            reply_message = []
+            message1 = TextSendMessage(
+                text='您的商家資訊已成功註冊於資料庫中，祝您商品販售順利！')
+            reply_message.append(message1)
+            reply_message.append(
+                Generator.products_list_quick_reply)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想查詢今日商家':
+            
+            reply_message = []
+
+            reply_message.append(Generator.get_all_store_template_message)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '查看今日有上架商品的商家':
+
+            products_info1 = Generator.carousel_template_generator_three(
+                alt_text='Carousel template',
+                image_url='https://i.imgur.com/vG4FgDX.png',
+                title=STORE_NAME,
+                description=f'商家地址：{STORE_ADDRESS}',
+                label1=FIRST_PRODUCT_NAME,
+                label1_info=f'我想要了解{FIRST_PRODUCT_NAME}',
+                label2=SECOND_PRODUCT_NAME,
+                label2_info=f'我想要了解{SECOND_PRODUCT_NAME}',
+                label3=THIRD_PRODUCT_NAME,
+                label3_info=f'我想要了解{THIRD_PRODUCT_NAME}',
+            )
             
         else :
 
@@ -588,16 +749,20 @@ def handle_image_message(event):
 
 # Start Tornado server
 def start_tornado():
+
     asyncio.set_event_loop(asyncio.new_event_loop())
     # Initialize Tornado app
     tornado_app = tornado.web.Application([
-        ("/"+ config.image_folder +"/(.*)", tornado.web.StaticFileHandler, {"path": config.image_folder}),
+        ("/"+ config.image_folder +"/(.*)", 
+         tornado.web.StaticFileHandler, 
+         {"path": config.image_folder}),
     ])
     tornado_app.listen(5012)
     tornado.ioloop.IOLoop.instance().start()
 
-# Start Flask server
-def start_flask():
+def start_flask() -> None:
+
+    # Start Flask server
     app.run(port=5002)
 
 
@@ -605,6 +770,7 @@ def main() -> None:
 
     # Web server.
     if __name__ == '__main__':
+
         # Start Tornado server in a separate thread
         tornado_thread = threading.Thread(target=start_tornado)
         tornado_thread.start()

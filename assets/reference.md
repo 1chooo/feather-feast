@@ -17,6 +17,7 @@
 * [用 Python 暢玩 Line bot - 17：Template message](https://ithelp.ithome.com.tw/articles/10282102?sc=pt)
 * [[Python+LINE Bot教學]提升使用者體驗的按鈕樣板訊息(Buttons template message)實用技巧](https://www.learncodewithmike.com/2020/07/line-bot-buttons-template-message.html)
 * [Day15[Line ChatBot]Messaging types下集](https://ithelp.ithome.com.tw/articles/10195640)
+* [用 Python 暢玩 Line bot - 22：使用者資訊](https://ithelp.ithome.com.tw/articles/10282156)
 
 ##### 回覆多則訊息
 * [#新手 line bot python一次回覆多則訊息](https://www.dcard.tw/f/softwareengineer/p/233395114)

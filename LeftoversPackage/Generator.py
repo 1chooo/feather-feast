@@ -18,7 +18,9 @@ from linebot.models import (
 # Import the action type of the line bot
 from linebot.models import (
     MessageTemplateAction, PostbackAction,
-    MessageAction, URIAction, QuickReplyButton
+    MessageAction, URIAction, 
+    QuickReplyButton, LocationAction,
+    DatetimePickerAction, RichMenuSwitchAction
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
@@ -97,6 +99,12 @@ known_us_quick_reply = quick_reply_generator(
     text='請選擇要顯示的買賣超資訊',
     label='來認識我們吧', 
     reply_content='來認識「一食二鳥」吧！',
+)
+
+products_list_quick_reply = quick_reply_generator(
+    text='歡迎點選主選單「商品」功能，以查看商品上架成果',
+    label='點我使用查詢商家功能', 
+    reply_content='我想查詢今日商家',
 )
 
 def buttons_template_generator_one(alt_text, 
@@ -210,6 +218,27 @@ products_info1 = carousel_template_generator_three(
 )
 
 
+get_all_store_template_message = TemplateSendMessage(
+    alt_text='All Store Carousel template',
+    template=CarouselTemplate(
+        columns=[
+            CarouselColumn(
+                thumbnail_image_url='https://i.imgur.com/vG4FgDX.png',
+                image_aspect_ratio='square',
+                image_size='cover',
+                title='查詢今日所有商家',
+                text='展示今日有供應商品商家',
+                actions=[
+                    MessageAction(
+                        label='所有商家',
+                        text='查看今日有上架商品的商家',
+                    ),
+                ]
+            ),
+        ]
+    )
+)
+
 """
 
 """
@@ -228,6 +257,19 @@ products_info2 = carousel_template_generator_three(
     # label4_info='我想要輸入商品售價',
 )
 
+products_info1 = carousel_template_generator_three(
+    alt_text='Carousel template',
+    image_url='https://i.imgur.com/vG4FgDX.png',
+    title='商品名稱',
+    description='請輸入商品詳細資訊（商品照片仍在測試階段）',
+    label1='商品名稱',
+    label1_info='我想要輸入商品名稱',
+    label2='商品數量',
+    label2_info='我想要輸入商品數量',
+    label3='商品售價',
+    label3_info='我想要輸入商品售價',
+)
+
 
 policy_buttons_template_message = buttons_template_generator_two(
     alt_text='policy button',
@@ -239,12 +281,22 @@ policy_buttons_template_message = buttons_template_generator_two(
     label2_reply='我還不太清楚使用者條款，可以給我看看使用者條款嗎？',
 )
 
+check_launch_buttons_template_message = buttons_template_generator_two(
+    alt_text='check launch button',
+    title='商品登陸確認',
+    title_info='確認連結是否填寫完成',
+    label1='完成',
+    label1_reply='我已完成填寫商品登錄連結！',
+    label2='晚點完成',
+    label2_reply='我馬上就會填完連結！',
+)
+
 check_store_info_buttons_template_message = buttons_template_generator_two(
     alt_text='policy button',
     title='請問內容是否皆正確',
     title_info='若資料無誤將登陸資料庫中',
     label1='正確',
-    label1_reply='以上資訊商家完全正確',
+    label1_reply='以上商家資訊完全正確，請將資料登錄資料庫',
     label2='再調整',
     label2_reply='我還有細節要調整',
 )
