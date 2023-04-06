@@ -62,6 +62,8 @@ def updateProduct(userId, productId, productName, productPrice, productNumber, i
         db.commit()
         db.close()
         return True
+    else:
+        raise ValueError("查無此商品")
 
 # delete product
 def deleteProduct(userId, productId):
@@ -73,6 +75,8 @@ def deleteProduct(userId, productId):
         db.commit()
         db.close()
         return True
+    else:
+        raise ValueError("查無此商品")
 
 # place order
 def placeOrder(userId, storeId, productId, userName, description):
@@ -95,8 +99,7 @@ def placeOrder(userId, storeId, productId, userName, description):
     except pymysql.err.OperationalError as error:
         cursor.execute("ROLLBACK")
         db.close()
-        raise DeadLockError("系統忙碌中，目前無法建立訂單，請稍後再試")
-        # raise DeadLockError("Failed to place order, error: {}".format(error))
+        raise ValueError("系統忙碌中，目前無法建立訂單，請稍後再試")
 
 # cancel order
 def cancelOrder(orderId, userId):
@@ -166,7 +169,7 @@ def getOrderDetails(itemId, isStoreOrder = False, isUserOrder = False):
             results.append(result)
         return results
     else:
-        raise ValueError("查無此訂單")
+        raise ValueError("查無訂單")
 
 # get orders by store name
 def getOrdersByStore(userId):
