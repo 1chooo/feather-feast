@@ -1,3 +1,5 @@
+from datetime import datetime
+import pytz
 import DatabaseSetting as database
 import pymysql
 import config
@@ -41,27 +43,30 @@ def createStore(storeName, userId, storeAddress):
         raise ValueError("該使用者已建立商店")
         
 # create product
-def createProduct(userId, productName, productPrice, productNumber, imageFileName):
+def createProduct(userId, productName, productPrice, productNumber, imageFileName, expiredDate, lastPickUpDate):
     storeId = getStore(userId, True)
-    imageUrl = config.image_server_host + "/" + config.image_folder + "/" + imageFileName
+    imageUrl = config.image_folder + "/" + imageFileName
+    dateTimeToday = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
     db, cursor = database.initDataBase()
-    sql = "INSERT INTO products (store_id, name, price, number, image_url) VALUES (%d, '%s', %d, %d, '%s')" % (storeId, productName, productPrice, productNumber, imageUrl)
+    sql = "INSERT INTO products (store_id, name, price, number, image_url, create_at, expired_date, last_pick_up_date) VALUES (%d, '%s', %d, %d, '%s', '%s', '%s', '%s')" % (storeId, productName, productPrice, productNumber, imageUrl, dateTimeToday, datetime.strptime(expiredDate, '%Y-%m-%dT%H:%M'), datetime.strptime(lastPickUpDate, '%Y-%m-%dT%H:%M'))
     cursor.execute(sql)
     db.commit()
     db.close()
     return True
 
 # update product
-def updateProduct(userId, productId, productName, productPrice, productNumber, imageFileName):
+def updateProduct(userId, productId, productName, productPrice, productNumber, imageFileName, productExpiredDate, productLastPickUpDate):
     storeId = getStore(userId, True)
     if (getProduct(productId, storeId)):
-        imageUrl = config.image_server_host + "/" + config.image_folder + "/" + imageFileName
+        imageUrl = config.image_folder + "/" + imageFileName
         db, cursor = database.initDataBase()
-        sql = "UPDATE products SET name = '%s', price = %d, number = %d, image_url = '%s' WHERE id = %d" % (productName, productPrice, productNumber, imageUrl, productId)
+        sql = "UPDATE products SET name = '%s', price = %d, number = %d, image_url = '%s', expired_date = '%s', last_pick_up_date = '%s' WHERE id = %d" % (productName, productPrice, productNumber, imageUrl, datetime.strptime(productExpiredDate, '%Y-%m-%dT%H:%M'), datetime.strptime(productLastPickUpDate, '%Y-%m-%dT%H:%M'), productId)
         cursor.execute(sql)
         db.commit()
         db.close()
         return True
+    else:
+        raise ValueError("查無此商品")
 
 # delete product
 def deleteProduct(userId, productId):
@@ -73,19 +78,23 @@ def deleteProduct(userId, productId):
         db.commit()
         db.close()
         return True
+    else:
+        raise ValueError("查無此商品")
 
 # place order
 def placeOrder(userId, storeId, productId, userName, description):
     db, cursor = database.initDataBase()
     try:
-        cursor.execute("SELECT name, price FROM products WHERE id = %d AND number != 0 AND store_id = %d FOR UPDATE" % (productId, storeId))
+        cursor.execute("SELECT name, price, expired_date, last_pick_up_date FROM products WHERE id = %d AND number != 0 AND store_id = %d FOR UPDATE" % (productId, storeId))
         product = cursor.fetchmany(1)
         if product:
             productName = product[0][0]
             productPrice = product[0][1]
+            productExpiredDate = product[0][2]
+            productLastPickUpDate = product[0][3]
             sql = "UPDATE products SET number = number - 1 WHERE id = %d" % (productId)
             cursor.execute(sql)
-            sql = "INSERT INTO orders (user_id, store_id, product_name, product_price, user_name, total, description) VALUES ('%s', %d, '%s', %d, '%s', %d, '%s')" % (userId, storeId, productName, productPrice, userName, productPrice, description)
+            sql = "INSERT INTO orders (user_id, store_id, product_name, product_price, product_expired_date, product_last_pick_up_date, user_name, total, description) VALUES ('%s', %d, '%s', %d, '%s', '%s', '%s', %d, '%s')" % (userId, storeId, productName, productPrice, productExpiredDate, productLastPickUpDate, userName, productPrice, description)
             cursor.execute(sql)
             db.commit()
             db.close()
@@ -95,8 +104,7 @@ def placeOrder(userId, storeId, productId, userName, description):
     except pymysql.err.OperationalError as error:
         cursor.execute("ROLLBACK")
         db.close()
-        raise DeadLockError("系統忙碌中，目前無法建立訂單，請稍後再試")
-        # raise DeadLockError("Failed to place order, error: {}".format(error))
+        raise ValueError("系統忙碌中，目前無法建立訂單，請稍後再試")
 
 # cancel order
 def cancelOrder(orderId, userId):
@@ -113,27 +121,67 @@ def cancelOrder(orderId, userId):
     else:
         raise ValueError("查無訂單")
 
-# get products by store name
-def getProducts(storeName):
+# get product details by product name
+def getProductByName(productName):
+    db, cursor = database.initDataBase()
+    sql = "SELECT id, name, price, number, image_url, expired_date, last_pick_up_date FROM products WHERE name = '%s' AND DATE(created_at) = CURDATE()" % (productName)
+    cursor.execute(sql)
+    data = cursor.fetchmany(1)
+    db.close()
+    if data:
+        headers = ("id", "name", "price", "number", "image_url", "expired_date", "last_pick_up_date")
+        datum = dict(zip(headers, data[0]))
+        datum['image_url'] = config.image_server_host + "/" + datum['image_url']
+        datum['expired_date'] = datum['expired_date'].strftime('%Y-%m-%d %H:%M')
+        datum['last_pick_up_date'] = datum['last_pick_up_date'].strftime('%Y-%m-%d %H:%M')
+        return datum
+    else:
+        raise ValueError("查無此商品")
+
+# get product name by store name
+def getProductsName(storeName):
     result = []
     storeId = getStore(storeName)
     db, cursor = database.initDataBase()
-    sql = "SELECT id, name, price, number, image_url FROM products WHERE store_id = %d" % (storeId)
+    sql = "SELECT id, name FROM products WHERE store_id = %d AND DATE(created_at) = CURDATE()" % (storeId)
     cursor.execute(sql)
     data = cursor.fetchall()
     db.close()
     if data:
         for i in data:
-            headers = ("id", "name", "price", "number", "image_url")
+            headers = ("id", "name")
             result.append(dict(zip(headers, data[0])))
         return result
     else:
-        raise ValueError("查無此商品")
+        raise ValueError("查無商品")
+
+def getStoreNameByOnlineProduct():
+    storeId = []
+    result = []
+    db, cursor = database.initDataBase()
+    sql = "SELECT store_id, COUNT(store_id) FROM products WHERE DATE(created_at) = CURDATE() GROUP BY store_id"
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    if data:
+        for i in data:
+            storeId.append(i[0])
+        storeIdString = ', '.join(str(item) for item in storeId)
+        sql = "SELECT name FROM stores WHERE id IN ({})".format(storeIdString)
+        cursor.execute(sql)
+        data = cursor.fetchall()
+        db.close()
+        if data:
+            for i in data:
+                result.append(i[0])
+            return result
+    else:
+        db.close()
+        raise ValueError("今日無任何商店有上架商品")
 
 # get order details by store id
 def getStoreDetails(storeId):
     db, cursor = database.initDataBase()
-    sql = "SELECT * FROM stores WHERE id = '%s'" % (storeId)
+    sql = "SELECT * FROM stores WHERE id = %d" % (storeId)
     cursor.execute(sql)
     data = cursor.fetchmany(1)
     db.close()
@@ -160,13 +208,15 @@ def getOrderDetails(itemId, isStoreOrder = False, isUserOrder = False):
         results = [];
         for i in data:
             store = getStoreDetails(i[2])
-            headers = ("id", "user_id", "store","user_name", "product_name", 'product_price', "total", "description")
+            headers = ("id", "user_id", "store","user_name", "product_name", "product_price", "product_expired_date", "product_last_pick_up_date", "total", "description")
             result = dict(zip(headers, i))
             result['store'] = store
+            result['product_expired_date'] = result['product_expired_date'].strftime('%Y-%m-%d %H:%M')
+            result['product_last_pick_up_date'] = result['product_last_pick_up_date'].strftime('%Y-%m-%d %H:%M')
             results.append(result)
         return results
     else:
-        raise ValueError("查無此訂單")
+        raise ValueError("查無訂單")
 
 # get orders by store name
 def getOrdersByStore(userId):
@@ -178,3 +228,6 @@ def getOrdersByStore(userId):
 def getOrdersByUser(userId):
     order = getOrderDetails(userId, False, True)
     return order
+
+
+print(getStoreNameByOnlineProduct())
