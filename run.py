@@ -4,13 +4,10 @@
 Import the package we need. 
 """
 
-import sys
 import os
 from numpy import NaN
 import json
 import pandas as pd
-import math
-from flask import Flask, request, abort, jsonify, render_template, url_for
 import datetime
 import tornado.web
 import tornado.ioloop
@@ -19,18 +16,27 @@ import threading
 import DatabaseService
 import config
 
+""" Import the package concerning flask """
+from flask import (
+    Flask, request, 
+    abort, jsonify, 
+    render_template, url_for,
+    send_from_directory, redirect
+)
+from werkzeug.utils import secure_filename
+
 """ Import the self-definite function """
 from LeftoversPackage import (
     Generator, Tools, 
 )
 
-""" Below is the package with Line Bot"""
+""" Below is the package with Line Bot """
 
 from linebot import (
-    LineBotApi, WebhookHandler,
+    LineBotApi, WebhookHandler
 )
 from linebot.exceptions import (
-    InvalidSignatureError, LineBotApiError,
+    InvalidSignatureError, LineBotApiError
 )
 # Import the message type of the line bot
 from linebot.models import (
@@ -40,21 +46,23 @@ from linebot.models import (
     StickerSendMessage, AudioSendMessage,
     ImageMessage, VideoMessage,
     AudioMessage, TextMessage,
-    TemplateSendMessage, QuickReply,
+    TemplateSendMessage, QuickReply
 )
 
 # Import the action type of the line bot
 from linebot.models import (
     MessageTemplateAction, PostbackAction,
-    MessageAction, URIAction, QuickReplyButton
+    MessageAction, URIAction, 
+    QuickReplyButton, LocationAction,
+    DatetimePickerAction, RichMenuSwitchAction
 )
 from linebot.models.template import (
     ButtonsTemplate, CarouselTemplate,
-    ConfirmTemplate, ImageCarouselTemplate,
+    ConfirmTemplate, ImageCarouselTemplate
 )
 from linebot.models.template import *
 from linebot.models.events import (
-    FollowEvent, MessageEvent,
+    FollowEvent, MessageEvent
 )
 
 
@@ -108,6 +116,16 @@ STATUS = ''
 
 @app.route("/submit", methods = ['POST'])
 def submit() -> str:
+
+    """ Route of Launch Product
+
+    Parameters:
+        None
+
+    Returns:
+        
+
+    """
 
     global YES
     global NO
@@ -191,44 +209,7 @@ def submit() -> str:
         if YES == 'checked':
 
             STATUS = ''
-            STATUS = f'商家名稱：{STORE_NAME}\n\
-                       商家地址：{STORE_ADDRESS}\n\
-                       商品種類數量：{PRODUCT_TYPE_AMOUNT}\n\
-                       第一項商品資訊：\n\
-                       第一項商品名稱：{FIRST_PRODUCT_NAME}\n\
-                       第一項商品數量：{FIRST_PRODUCT_AMOUNT}\n\
-                       第一項商品售價：{FIRST_PRODUCT_PRICE}\n\
-                       第二項商品資訊：\n\
-                       第二項商品名稱：{SECOND_PRODUCT_NAME}\n\
-                       第二項商品數量：{SECOND_PRODUCT_AMOUNT}\n\
-                       第二項商品售價：{SECOND_PRODUCT_PRICE}\n\
-                       第三項商品資訊：\n\
-                       第三項商品名稱：{THIRD_PRODUCT_NAME}\n\
-                       第三項商品數量：{THIRD_PRODUCT_AMOUNT}\n\
-                       第三項商品售價：{THIRD_PRODUCT_PRICE}\n\
-                       最佳食用期限：{EXPIRY_DATE}\n\
-                       最後取餐時間：{PICKUP_TIME}\n'
-            
-
-        # STATUS = ''
-        # STATUS = '商家名稱：' + STORE_NAME + '\n'
-        # STATUS += '商家地址：' + STORE_ADDRESS + '\n'
-        # STATUS += '商品種類數量：' + PRODUCT_TYPE_AMOUNT + '\n'
-        # STATUS += '第一項商品資訊：\n'
-        # STATUS += '第一項商品名稱：' + FIRST_PRODUCT_NAME + '\n'
-        # STATUS += '第一項商品數量：' + FIRST_PRODUCT_AMOUNT + '\n'
-        # STATUS += '第一項商品售價：' + FIRST_PRODUCT_PRICE + '\n'
-        # STATUS += '第二項商品資訊：\n'
-        # STATUS += '第二項商品名稱：' + SECOND_PRODUCT_NAME + '\n'
-        # STATUS += '第二項商品數量：' + SECOND_PRODUCT_AMOUNT + '\n'
-        # STATUS += '第二項商品售價：' + SECOND_PRODUCT_PRICE + '\n'
-        # STATUS += '第三項商品資訊：\n'
-        # STATUS += '第三項商品名稱：' + THIRD_PRODUCT_NAME + '\n'
-        # STATUS += '第三項商品數量：' + THIRD_PRODUCT_AMOUNT + '\n'
-        # STATUS += '第三項商品售價：' + THIRD_PRODUCT_PRICE + '\n'
-        # STATUS += '最佳食用期限：' + EXPIRY_DATE + '\n'
-        # STATUS += '最後取餐時間：' + PICKUP_TIME + '\n'
-        # print(STATUS)
+            STATUS = f'已成功登陸！以下為詳細資訊'
         
         return render_template(
             'form.html',
@@ -236,6 +217,7 @@ def submit() -> str:
             NO = NO, 
             STORE_NAME = STORE_NAME,
             STORE_ADDRESS = STORE_ADDRESS,
+            PRODUCT_TYPE_AMOUNT = PRODUCT_TYPE_AMOUNT,
             FIRST_PRODUCT_NAME = FIRST_PRODUCT_NAME,
             FIRST_PRODUCT_AMOUNT = FIRST_PRODUCT_AMOUNT,
             FIRST_PRODUCT_PRICE = FIRST_PRODUCT_PRICE,
@@ -320,29 +302,14 @@ def reply_text_and_get_user_profile(event) -> None:
     #     TextSendMessage('安安，我們成功成為好友了！')
     # )
 
-SERVER_DOMAIN_URL = ''
-IMAGE_SERVER_DOMAIN_URL = ''
-
-
-def getDomainUrl(SERVER_DOMAIN_URL) -> str:
-
-    SERVER_DOMAIN_URL = str(input('Please input your current server domain: '))
-
-    return SERVER_DOMAIN_URL
-
-
-def getImageDomainUrl(IMAGE_SERVER_DOMAIN_URL) -> str:
-
-    IMAGE_SERVER_DOMAIN_URL = str(input('Please input your current IMAGE server domain: '))
-
-    return IMAGE_SERVER_DOMAIN_URL
-
-SERVER_DOMAIN_URL = getDomainUrl(SERVER_DOMAIN_URL)
-
-FORMS_URL = SERVER_DOMAIN_URL + '/launch_products'
+FORMS_URL = config.SERVER_DOMAIN_URL + '/launch_products'
 
 STORE_USER_ID = ''
 UPDATE_STORE_INFO_TO_DB = False
+READY_TO_GET_FIRST_PRODUCT_IMAGE = False
+READY_TO_GET_SECOND_PRODUCT_IMAGE = False
+READY_TO_GET_THIRD_PRODUCT_IMAGE = False
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event) -> None:
@@ -353,9 +320,6 @@ def handle_text_message(event) -> None:
     global STORE_ADDRESS
 
     global PRODUCT_TYPE_AMOUNT
-    global PRODUCT_TYPE_AMOUNT_1
-    global PRODUCT_TYPE_AMOUNT_2
-    global PRODUCT_TYPE_AMOUNT_3
 
     global FIRST_PRODUCT_NAME, FIRST_PRODUCT_AMOUNT, FIRST_PRODUCT_PRICE
     global SECOND_PRODUCT_NAME, SECOND_PRODUCT_AMOUNT, SECOND_PRODUCT_PRICE
@@ -367,6 +331,10 @@ def handle_text_message(event) -> None:
     global STORE_USER_ID
     global UPDATE_STORE_INFO_TO_DB
 
+    global READY_TO_GET_FIRST_PRODUCT_IMAGE
+    global READY_TO_GET_SECOND_PRODUCT_IMAGE
+    global READY_TO_GET_THIRD_PRODUCT_IMAGE
+
     try:
 
         if (event.message.text) == '來認識「一食二鳥」吧！':
@@ -375,7 +343,7 @@ def handle_text_message(event) -> None:
             message1 = TextSendMessage(
                 text='歡迎來到\n「一食二鳥-剩食媒合平台」\n有你來惜食 永續新開始🌱')
             reply_message.append(message1)
-            message2 = TextMessage(
+            message2 = TextSendMessage(
                 text='我們幫助店家\n上架每日剩食\n並讓消費者可自由選購\n' +
                 '好康划算的剩食媒合平台\n完成一筆交易\n滿足雙方需求的同時\n' +
                 '也是愛惜食物\n為地球盡一份心力🌍')
@@ -458,6 +426,43 @@ def handle_text_message(event) -> None:
             reply_message = []
 
             message1 = TextSendMessage(
+                text='再上架商品前，我們想先確認是否需要上傳商品圖片？')
+            reply_message.append(message1)
+            message2 = TextSendMessage(
+                text='！！！重要提醒！！！\n' +
+                '一種商品只能上傳一張照片')
+
+            reply_message.append(
+                Generator.check_product_image_buttons_template_message)
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我還在幫我的商品們拍照！':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='我們非常期待您拍攝的成果')
+            reply_message.append(message1)
+            reply_message.append(
+                Generator.check_again_product_image_buttons_template_message)
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '今天先不傳照片，我要直接上架商品' or \
+            (event.message.text) == '最後確認商品資訊':
+
+            """_
+            可能要加上偵測有幾種商品，以給顧客完整資訊
+            EX: 若只有一種商品就給一種就好
+            """
+            reply_message = []
+
+            message1 = TextSendMessage(
                 text='您的商家名稱是：' + 
                 STORE_NAME +
                 '\n您的商家地址是：' +
@@ -480,27 +485,6 @@ def handle_text_message(event) -> None:
                 '第三項商品售價：' + str(THIRD_PRODUCT_PRICE))
             reply_message.append(message2)
 
-            """ __message words limits__
-                if happened, use the below comment code.
-            """
-            # message2 = TextSendMessage(
-            #     text='第一項商品資訊：\n' +
-            #     '第一項商品名稱：' + FIRST_PRODUCT_NAME + '\n' +
-            #     '第一項商品數量：' + str(FIRST_PRODUCT_AMOUNT) + '\n' +
-            #     '第一項商品售價：' + str(FIRST_PRODUCT_PRICE))
-            # reply_message.append(message2)
-            # message3 = TextSendMessage(
-            #     text='第二項商品資訊：\n' +
-            #     '第二項商品名稱' + SECOND_PRODUCT_NAME + '\n' +
-            #     '第二項商品數量' + str(SECOND_PRODUCT_AMOUNT) + '\n' +
-            #     '第二項商品售價' + str(SECOND_PRODUCT_PRICE))
-            # reply_message.append(message3)
-            # message4 = TextSendMessage(
-            #     text='第三項商品資訊：\n' +
-            #     '第三項商品名稱' + THIRD_PRODUCT_NAME + '\n' +
-            #     '第三項商品數量' + str(THIRD_PRODUCT_AMOUNT) + '\n' +
-            #     '第三項商品售價' + str(THIRD_PRODUCT_PRICE) + '\n')
-            # reply_message.append(message4)
             message5 = TextSendMessage(
                 text='最佳食用期限：' +
                 EXPIRY_DATE + '\n' +
@@ -510,6 +494,73 @@ def handle_text_message(event) -> None:
 
             reply_message.append(
                 Generator.check_store_info_buttons_template_message)
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要幫我的商品加上美照！':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='請「依序」點選下方按鈕已完成圖片上傳')
+            reply_message.append(message1)
+            reply_message.append(
+                Generator.image_upload_carousel)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要修改商品的照片！':
+
+            reply_message = []
+
+            message1 = TextSendMessage(
+                text='此功能仍在測試中，請幫我點選「完成」按鈕！')
+            reply_message.append(message1)
+            reply_message.append(
+                Generator.final_image_check_buttons_template_message)
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要上傳第一種商品照片':
+
+            READY_TO_GET_FIRST_PRODUCT_IMAGE = True
+            
+            reply_message = []
+            message1 = TextSendMessage(
+                text='請放心傳送第一種商品圖片至聊天室')
+            reply_message.append(message1)        
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要上傳第二種商品照片':
+
+            READY_TO_GET_SECOND_PRODUCT_IMAGE = True
+            
+            reply_message = []
+            message1 = TextSendMessage(
+                text='請放心傳送第二種商品圖片至聊天室')
+            reply_message.append(message1)        
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+            
+        elif (event.message.text) == '我想要上傳第三種商品照片':
+
+            READY_TO_GET_THIRD_PRODUCT_IMAGE = True
+            
+            reply_message = []
+            message1 = TextSendMessage(
+                text='請放心傳送第三種商品圖片至聊天室')
+            reply_message.append(message1)        
             
             line_bot_api.reply_message(
                 event.reply_token,
@@ -562,6 +613,14 @@ def handle_text_message(event) -> None:
             # profile = line_bot_api.get_profile(STORE_USER_ID)
             # print(profile)
 
+            # if UPDATE_STORE_INFO_TO_DB == True:
+
+                # DatabaseService.createStore(
+                #     STORE_NAME, 
+                #     STORE_USER_ID, 
+                #     STORE_ADDRESS)
+                # DatabaseService.createProduct
+
             reply_message = []
             message1 = TextSendMessage(
                 text='您的商家資訊已成功註冊於資料庫中，祝您商品販售順利！')
@@ -610,8 +669,6 @@ def handle_text_message(event) -> None:
                 event.reply_token,
                 reply_message)
             
-        
-            
     except Exception as e:
 
         print(f"Error occurred: {e}")
@@ -630,28 +687,112 @@ def handle_text_message(event) -> None:
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
 
+    global STORE_NAME
+
+    global FIRST_PRODUCT_NAME
+    global SECOND_PRODUCT_NAME
+    global THIRD_PRODUCT_NAME
+
+    global READY_TO_GET_FIRST_PRODUCT_IMAGE
+    global READY_TO_GET_SECOND_PRODUCT_IMAGE
+    global READY_TO_GET_THIRD_PRODUCT_IMAGE
+
     """
         inform the handler when the message event is
         image message do the below things.
     """
-    # 回覆訊息
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(
-            text='Image has been Uploaded ' + 
-            event.message.id + 
-            '\non ' + 
-            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
-    )
 
-    # 下載照片
+    if READY_TO_GET_FIRST_PRODUCT_IMAGE == True:
+
+        reply_message = []
+
+        message1 = TextSendMessage(
+            text='第一種商品照片已成功上傳，上傳時間： ' + 
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+        reply_message.append(message1)
+        message2 = TextSendMessage(
+            text='請繼續點擊「第二種商品照片」按鈕以繼續上傳，' +
+            '若無後續圖片需要上傳請點選下方「完成」按鈕')
+        reply_message.append(message2)
+        reply_message.append(
+            Generator.image_upload_carousel)
+        reply_message.append(
+            Generator.image_check_2_buttons_template_message)
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            reply_message)
+        
+    elif READY_TO_GET_SECOND_PRODUCT_IMAGE == True:
+
+        reply_message = []
+
+        message1 = TextSendMessage(
+            text='第二種商品照片已成功上傳，上傳時間： ' + 
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+        reply_message.append(message1)
+        message2 = TextSendMessage(
+            text='請繼續點擊「第三種商品照片」按鈕以繼續上傳，' +
+            '若無後續圖片需要上傳請點選下方「完成」按鈕')
+        reply_message.append(message2)
+        reply_message.append(
+            Generator.image_upload_carousel)
+        reply_message.append(
+            Generator.image_check_3_buttons_template_message)
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            reply_message)
+        
+    elif READY_TO_GET_THIRD_PRODUCT_IMAGE == True:
+
+        reply_message = []
+
+        message1 = TextSendMessage(
+            text='第三種商品照片已成功上傳，上傳時間： ' + 
+            str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+        reply_message.append(message1)
+        message2 = TextSendMessage(
+            text='若已完成上傳請幫我點擊下方確認按鈕')
+        reply_message.append(message2)
+        # reply_message.append(
+        #     Generator.image_upload_carousel)
+        reply_message.append(
+            Generator.final_image_check_buttons_template_message)
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            reply_message)      
+        
+    else:
+        
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(
+                text='Image has been Uploaded ' + 
+                event.message.id + 
+                '\non ' + 
+                str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")))
+        )
+
+    # download the image.
     try:
         message_content = line_bot_api.get_message_content(event.message.id)
 
-        file_path = user_log_path + '/img/'
-        Tools.check_dir(file_path)
+        if READY_TO_GET_FIRST_PRODUCT_IMAGE == True:
+            output_path = f'./uploader/{current_date}_{STORE_NAME}_{FIRST_PRODUCT_NAME}.jpg'
+            READY_TO_GET_FIRST_PRODUCT_IMAGE = False
 
-        output_path = Tools.get_output_path(file_path, current_date, event.message.id, '.jpg')
+        elif READY_TO_GET_SECOND_PRODUCT_IMAGE == True:
+            output_path = f'./uploader/{current_date}_{STORE_NAME}_{SECOND_PRODUCT_NAME}.jpg'
+            READY_TO_GET_SECOND_PRODUCT_IMAGE = False
+
+        elif READY_TO_GET_THIRD_PRODUCT_IMAGE == True:
+            output_path = f'./uploader/{current_date}_{STORE_NAME}_{THIRD_PRODUCT_NAME}.jpg'
+            READY_TO_GET_THIRD_PRODUCT_IMAGE = False
+
+        else:
+            output_path = './uploader/' + current_date
 
         with open(output_path, 'wb') as fd:
             for chunk in message_content.iter_content():
@@ -660,7 +801,6 @@ def handle_image_message(event):
     except LineBotApiError as e:
         # 如果發生例外，記錄錯誤訊息
         print('Unable to get message content: ' + str(e))
-
 
 """
     Get the audio message from the user 
@@ -747,13 +887,21 @@ def handle_image_message(event):
         print('Unable to get message content: ' + str(e))
 
 
-# Start Tornado server
 def start_tornado():
 
+    """ Start Tornado Server.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+    
     asyncio.set_event_loop(asyncio.new_event_loop())
     # Initialize Tornado app
     tornado_app = tornado.web.Application([
-        ("/"+ config.image_folder +"/(.*)", 
+        ("/" + config.image_server_host + "/(.*)", 
          tornado.web.StaticFileHandler, 
          {"path": config.image_folder}),
     ])
@@ -762,13 +910,30 @@ def start_tornado():
 
 def start_flask() -> None:
 
+    """ Start Flask Server.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+
     # Start Flask server
     app.run(port=5002)
 
 
 def main() -> None: 
 
-    # Web server.
+    """ Web Server.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+    
     if __name__ == '__main__':
 
         # Start Tornado server in a separate thread

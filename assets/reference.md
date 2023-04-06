@@ -18,6 +18,7 @@
 * [[Python+LINE Bot教學]提升使用者體驗的按鈕樣板訊息(Buttons template message)實用技巧](https://www.learncodewithmike.com/2020/07/line-bot-buttons-template-message.html)
 * [Day15[Line ChatBot]Messaging types下集](https://ithelp.ithome.com.tw/articles/10195640)
 * [用 Python 暢玩 Line bot - 22：使用者資訊](https://ithelp.ithome.com.tw/articles/10282156)
+* [[30 天教你如何玩弄 Line bot API] 第 7 天：教你如何自動嘴！](https://ithelp.ithome.com.tw/m/articles/10219099)
 
 ##### 回覆多則訊息
 * [#新手 line bot python一次回覆多則訊息](https://www.dcard.tw/f/softwareengineer/p/233395114)
@@ -28,6 +29,7 @@
 * [use line bot to order meal](https://github.com/ernie0817/line_bot)
 * [Order-line-bot](https://github.com/d2hero/Order-line-bot)
 * [LineBot_template](https://github.com/Tzuhui/LineBot_template)
+* [monojs-line-bot](https://github.com/kelvin2go/monojs-line-bot)
 
 #### Global 
 * [Python 3: UnboundLocalError: local variable referenced before assignment [duplicate]](https://stackoverflow.com/questions/10851906/python-3-unboundlocalerror-local-variable-referenced-before-assignment)
@@ -43,3 +45,5 @@
 #### Flask html
 
 * [Upload image in Flask](https://stackoverflow.com/questions/44926465/upload-image-in-flask)
+* [Upload and Display Images On the Frontend Using Python Flask](https://geekpython.in/render-images-from-flask)
+* [flask_uploads: ImportError: cannot import name 'secure_filename'](https://stackoverflow.com/questions/61628503/flask-uploads-importerror-cannot-import-name-secure-filename)

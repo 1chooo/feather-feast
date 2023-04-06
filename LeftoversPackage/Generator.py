@@ -107,6 +107,18 @@ products_list_quick_reply = quick_reply_generator(
     reply_content='我想查詢今日商家',
 )
 
+no_more_image_quick_reply = quick_reply_generator(
+    text='',
+    label='我已上傳完成', 
+    reply_content='最後確認商品資訊',
+)
+
+check_image_quick_reply = quick_reply_generator(
+    text='',
+    label='我已上傳完成', 
+    reply_content='最後確認商品資訊',
+)
+
 def buttons_template_generator_one(alt_text, 
     title, title_info, label1, label1_reply,
     ) -> 'TemplateSendMessage':
@@ -270,6 +282,19 @@ products_info1 = carousel_template_generator_three(
     label3_info='我想要輸入商品售價',
 )
 
+image_upload_carousel = carousel_template_generator_three(
+    alt_text='Image Carousel template',
+    image_url='https://i.imgur.com/vG4FgDX.png',
+    title='照片上傳',
+    description='！！！一種商品限一張！！！',
+    label1='第一種商品照片',
+    label1_info='我想要上傳第一種商品照片',
+    label2='第二種商品照片',
+    label2_info='我想要上傳第二種商品照片',
+    label3='第三種商品照片',
+    label3_info='我想要上傳第三種商品照片',
+)
+
 
 policy_buttons_template_message = buttons_template_generator_two(
     alt_text='policy button',
@@ -279,6 +304,36 @@ policy_buttons_template_message = buttons_template_generator_two(
     label1_reply='我已詳閱使用者條款並且願意遵守',
     label2='再看看',
     label2_reply='我還不太清楚使用者條款，可以給我看看使用者條款嗎？',
+)
+
+image_check_2_buttons_template_message = buttons_template_generator_two(
+    alt_text='policy button',
+    title='我已完成照片上傳',
+    title_info='願意遵守使用者條款',
+    label1='完成',
+    label1_reply='最後確認商品資訊',
+    label2='繼續',
+    label2_reply='我想要上傳第二種商品照片',
+)
+
+image_check_3_buttons_template_message = buttons_template_generator_two(
+    alt_text='policy button',
+    title='我已完成照片上傳',
+    title_info='願意遵守使用者條款',
+    label1='完成',
+    label1_reply='最後確認商品資訊',
+    label2='繼續',
+    label2_reply='我想要上傳第三種商品照片',
+)
+
+final_image_check_buttons_template_message = buttons_template_generator_two(
+    alt_text='policy button',
+    title='我已完成照片上傳',
+    title_info='願意遵守使用者條款',
+    label1='完成',
+    label1_reply='最後確認商品資訊',
+    label2='再修改',
+    label2_reply='我想要修改商品的照片！',
 )
 
 check_launch_buttons_template_message = buttons_template_generator_two(
@@ -299,6 +354,26 @@ check_store_info_buttons_template_message = buttons_template_generator_two(
     label1_reply='以上商家資訊完全正確，請將資料登錄資料庫',
     label2='再調整',
     label2_reply='我還有細節要調整',
+)
+
+check_product_image_buttons_template_message = buttons_template_generator_two(
+    alt_text='image button',
+    title='請問需要上傳商品圖片？',
+    title_info='一種商品限一張！！！',
+    label1='需要',
+    label1_reply='我想要幫我的商品加上美照！',
+    label2='正在拍',
+    label2_reply='我還在幫我的商品們拍照！',
+)
+
+check_again_product_image_buttons_template_message = buttons_template_generator_two(
+    alt_text='image button',
+    title='請問還需要上傳商品圖片？',
+    title_info='一種商品限一張！！！',
+    label1='需要',
+    label1_reply='我想要幫我的商品加上美照！',
+    label2='沒關係',
+    label2_reply='今天先不傳照片，我要直接上架商品',
 )
 
 carousel_template_message = TemplateSendMessage(
