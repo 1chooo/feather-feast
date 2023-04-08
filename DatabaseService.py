@@ -32,30 +32,104 @@ def getProduct(productId, storeId):
 
 # create store
 def createStore(storeName, userId, storeAddress):
+
+    """ Create the Store
+    Parameters
+        - string storeName 商店名稱
+        - string userId Line 使用者 id
+        - string storeAddress 商品地址
+
+    Raises:
+        ValueError: 該使用者已建立商店
+
+    Returns:
+        _type_: True
+
+    """
+
     try:
         db, cursor = database.initDataBase()
         sql = "INSERT INTO stores (name, user_id, address) VALUES ('%s', '%s', '%s')" % (storeName, userId, storeAddress)
         cursor.execute(sql)
         db.commit()
         db.close()
+
+        print('Store has been created, below are the complete info:')
+        print(f'+---------+----------------+')
+        print(f'| user_id |    {userId}    |')
+        print(f'| name    |   {storeName}  |')
+        print(f'| address | {storeAddress} |')
+        print(f'+---------+----------------+')
+
         return True
     except pymysql.err.IntegrityError:
         raise ValueError("該使用者已建立商店")
         
 # create product
 def createProduct(userId, productName, productPrice, productNumber, imageFileName, expiredDate, lastPickUpDate):
+
+    """ Create the product
+    Parameters
+        - string userId Line 使用者 id
+        - string productName 商品名稱
+        - int productPrice 商品價格
+        - int productNumber 商品數量
+        - string imageFileName 商品圖片檔名
+        - string expiredDate 商品過期時間
+        - string lastPickUpDate 商品最後取餐時間
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        _type_: True
+
+    """
+
     storeId = getStore(userId, True)
     imageUrl = config.image_folder + "/" + imageFileName
+    print('Image url has been generated:', imageUrl)
+
     dateTimeToday = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
     db, cursor = database.initDataBase()
     sql = "INSERT INTO products (store_id, name, price, number, image_url, create_at, expired_date, last_pick_up_date) VALUES (%d, '%s', %d, %d, '%s', '%s', '%s', '%s')" % (storeId, productName, productPrice, productNumber, imageUrl, dateTimeToday, datetime.strptime(expiredDate, '%Y-%m-%dT%H:%M'), datetime.strptime(lastPickUpDate, '%Y-%m-%dT%H:%M'))
     cursor.execute(sql)
     db.commit()
     db.close()
+
+    print('Product has been created, below are the complete info:')
+    print(f'+-------------------+-------------------+')
+    print(f'| store_id          | {userId}          |')
+    print(f'| name              | {productName}     |')
+    print(f'| price             | {productPrice}    |')
+    print(f'| number            | {productNumber}   |')
+    print(f'| image_url         | {imageUrl}        |')
+    print(f'| created_at        | {dateTimeToday}   |')
+    print(f'| expired_date      | {expiredDate}     |')
+    print(f'| last_pick_up_date | {lastPickUpDate}  |')
+    print(f'+-------------------+-------------------+')
+
     return True
 
 # update product
 def updateProduct(userId, productId, productName, productPrice, productNumber, imageFileName, productExpiredDate, productLastPickUpDate):
+
+    """ Update the product
+    Parameters
+        - string userId Line 使用者 id
+        - int productId 商品 id
+        - string productName 商品名稱
+        - int productPrice 商品價格
+        - int productNumber 商品數量
+        - string imageFileName 商品圖片檔名
+
+    Raises:
+        ValueError: 查無此商品
+
+    Returns:
+        _type_: True
+
+    """
     storeId = getStore(userId, True)
     if (getProduct(productId, storeId)):
         imageUrl = config.image_folder + "/" + imageFileName
@@ -70,6 +144,20 @@ def updateProduct(userId, productId, productName, productPrice, productNumber, i
 
 # delete product
 def deleteProduct(userId, productId):
+
+    """ Delete the product
+    Parameters
+        - string userId Line 使用者 id
+        - int productId 商品 id
+
+    Raises:
+        ValueError: 查無此商品
+
+    Returns:
+        _type_: True
+
+    """
+
     storeId = getStore(userId, True)
     if (getProduct(productId, storeId)):
         db, cursor = database.initDataBase()
@@ -83,6 +171,23 @@ def deleteProduct(userId, productId):
 
 # place order
 def placeOrder(userId, storeId, productId, userName, description):
+
+    """ Place the Order
+    Parameters
+        - string userId Line 使用者 id
+        - int storeId 商店 id
+        - int productId 商品 id
+        - string userName 訂購使用者姓名
+        - string description 訂購備註
+
+    Raises:
+        ValueError: 系統忙碌中，目前無法建立訂單，請稍後再試
+
+    Returns:
+        _type_: True
+
+    """
+
     db, cursor = database.initDataBase()
     try:
         cursor.execute("SELECT name, price, expired_date, last_pick_up_date FROM products WHERE id = %d AND number != 0 AND store_id = %d FOR UPDATE" % (productId, storeId))
@@ -108,6 +213,20 @@ def placeOrder(userId, storeId, productId, userName, description):
 
 # cancel order
 def cancelOrder(orderId, userId):
+
+    """ Cancel the Order
+    Parameters
+        - int orderId 訂單 id
+        - string userId Line 使用者 id
+
+    Raises:
+        ValueError: 查無此商品
+
+    Returns:
+        _type_: True
+
+    """
+
     db, cursor = database.initDataBase()
     sql = "SELECT id FROM orders WHERE id = %d AND user_id = '%s'" % (orderId, userId)
     cursor.execute(sql)
@@ -230,4 +349,4 @@ def getOrdersByUser(userId):
     return order
 
 
-print(getStoreNameByOnlineProduct())
+# print(getStoreNameByOnlineProduct())

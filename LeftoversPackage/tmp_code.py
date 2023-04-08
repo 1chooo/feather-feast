@@ -168,3 +168,17 @@ if READY_TO_GET_FIRST_PRODUCT_IMAGE == True:
         except LineBotApiError as e:
             # 如果發生例外，記錄錯誤訊息
             print('Unable to get message content: ' + str(e))
+
+
+products_info1 = Generator.carousel_template_generator_three(
+                alt_text='Carousel template',
+                image_url='https://i.imgur.com/vG4FgDX.png',
+                title=STORE_NAME,
+                description=f'商家地址：{STORE_ADDRESS}',
+                label1=FIRST_PRODUCT_NAME,
+                label1_info=f'我想要了解{FIRST_PRODUCT_NAME}',
+                label2=SECOND_PRODUCT_NAME,
+                label2_info=f'我想要了解{SECOND_PRODUCT_NAME}',
+                label3=THIRD_PRODUCT_NAME,
+                label3_info=f'我想要了解{THIRD_PRODUCT_NAME}',
+            )

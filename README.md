@@ -23,6 +23,30 @@ deactivate
 rm -rf venv     # remove the venv
 ```
 
+#### Config Example
+```py
+# line bot info
+line_bot_api = ''
+handler = ''
+
+# database settings
+database_host=''
+database_port=''
+database_user=''
+database_passwd=''
+database_db=''
+database_charset=''
+
+# Domain Settings
+SERVER_DOMAIN_URL = ''
+
+# image server host
+image_server_host=''
+image_folder=''
+
+```
+
+
 #### With ngrok free server
 ```SHELL
 brew install ngrok --cask

@@ -309,7 +309,7 @@ policy_buttons_template_message = buttons_template_generator_two(
 image_check_2_buttons_template_message = buttons_template_generator_two(
     alt_text='policy button',
     title='我已完成照片上傳',
-    title_info='願意遵守使用者條款',
+    title_info='我們想確認是否繼續上傳照片',
     label1='完成',
     label1_reply='最後確認商品資訊',
     label2='繼續',
@@ -319,11 +319,21 @@ image_check_2_buttons_template_message = buttons_template_generator_two(
 image_check_3_buttons_template_message = buttons_template_generator_two(
     alt_text='policy button',
     title='我已完成照片上傳',
-    title_info='願意遵守使用者條款',
+    title_info='我們想確認是否繼續上傳照片',
     label1='完成',
     label1_reply='最後確認商品資訊',
     label2='繼續',
     label2_reply='我想要上傳第三種商品照片',
+)
+
+order_check_buttons_template_message = buttons_template_generator_two(
+    alt_text='order button',
+    title='我想要查看訂單情形',
+    title_info='請點選身份別',
+    label1='商家',
+    label1_reply='我是商家，我想查看訂單情形',
+    label2='食客',
+    label2_reply='我是食客，我想查看訂單情形',
 )
 
 final_image_check_buttons_template_message = buttons_template_generator_two(

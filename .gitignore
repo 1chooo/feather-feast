@@ -5,5 +5,5 @@ ai-event.log
 log/
 *.pyc
 .DS_Store
-assets/db/dbSchema-2023-03-31.sql
+assets/db/
 uploader/

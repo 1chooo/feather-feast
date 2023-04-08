@@ -47,3 +47,9 @@
 * [Upload image in Flask](https://stackoverflow.com/questions/44926465/upload-image-in-flask)
 * [Upload and Display Images On the Frontend Using Python Flask](https://geekpython.in/render-images-from-flask)
 * [flask_uploads: ImportError: cannot import name 'secure_filename'](https://stackoverflow.com/questions/61628503/flask-uploads-importerror-cannot-import-name-secure-filename)
+
+
+#### Database
+
+* [](https://simplebackups.com/blog/how-to-import-sql-file-in-mysql/)
+* [](https://stackoverflow.com/questions/17666249/how-do-i-import-an-sql-file-using-the-command-line-in-mysql)
