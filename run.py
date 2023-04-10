@@ -13,22 +13,24 @@ import tornado.web
 import tornado.ioloop
 import asyncio
 import threading
-import DatabaseService
 import config
 import pytz
 
 """ Import the package concerning flask """
 from flask import (
-    Flask, request, 
+    Flask, Request, 
     abort, jsonify, 
     render_template, url_for,
     send_from_directory, redirect,
+    Config, Response,
+    request
 )
 from werkzeug.utils import secure_filename
 
 """ Import the self-definite function """
 from LeftoversPackage import (
     Generator, Tools, 
+    DatabaseService
 )
 
 """ Below is the package with Line Bot """

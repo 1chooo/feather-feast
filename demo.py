@@ -13,7 +13,6 @@ import tornado.web
 import tornado.ioloop
 import asyncio
 import threading
-import DatabaseService
 import config
 import pytz
 
@@ -29,6 +28,7 @@ from werkzeug.utils import secure_filename
 """ Import the self-definite function """
 from LeftoversPackage import (
     Generator, Tools, 
+    DatabaseService
 )
 
 """ Below is the package with Line Bot """
@@ -671,83 +671,6 @@ def handle_text_message(event) -> None:
             # profile = line_bot_api.get_profile(STORE_USER_ID)
             # print(profile)
 
-            if UPDATE_STORE_INFO_TO_DB == True:
-
-                FIRST_PRODUCT_IMAGE_NAME = f'{current_date}_{STORE_NAME}_{FIRST_PRODUCT_NAME}.jpg'
-                SECOND_PRODUCT_IMAGE_NAME = f'{current_date}_{STORE_NAME}_{SECOND_PRODUCT_NAME}.jpg'
-                THIRD_PRODUCT_IMAGE_NAME = f'{current_date}_{STORE_NAME}_{THIRD_PRODUCT_NAME}.jpg'
-
-                try:
-
-                    DatabaseService.createStore(
-                        storeName=STORE_NAME, 
-                        userId=STORE_USER_ID, 
-                        storeAddress=STORE_ADDRESS,
-                    )
-
-                    if (PRODUCT_TYPE_AMOUNT == 1):
-
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=FIRST_PRODUCT_NAME, 
-                            productPrice=FIRST_PRODUCT_PRICE, 
-                            productNumber=FIRST_PRODUCT_AMOUNT, 
-                            imageFileName=FIRST_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-                    elif (PRODUCT_TYPE_AMOUNT == 2):
-
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=FIRST_PRODUCT_NAME, 
-                            productPrice=FIRST_PRODUCT_PRICE, 
-                            productNumber=FIRST_PRODUCT_AMOUNT, 
-                            imageFileName=FIRST_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=SECOND_PRODUCT_NAME, 
-                            productPrice=SECOND_PRODUCT_PRICE, 
-                            productNumber=SECOND_PRODUCT_AMOUNT, 
-                            imageFileName=SECOND_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-
-                    elif (PRODUCT_TYPE_AMOUNT == 3):
-
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=FIRST_PRODUCT_NAME, 
-                            productPrice=FIRST_PRODUCT_PRICE, 
-                            productNumber=FIRST_PRODUCT_AMOUNT, 
-                            imageFileName=FIRST_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=SECOND_PRODUCT_NAME, 
-                            productPrice=SECOND_PRODUCT_PRICE, 
-                            productNumber=SECOND_PRODUCT_AMOUNT, 
-                            imageFileName=SECOND_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-                        DatabaseService.createProduct(
-                            userId=STORE_USER_ID, 
-                            productName=THIRD_PRODUCT_NAME, 
-                            productPrice=THIRD_PRODUCT_PRICE, 
-                            productNumber=THIRD_PRODUCT_AMOUNT, 
-                            imageFileName=THIRD_PRODUCT_IMAGE_NAME, 
-                            expiredDate=EXPIRY_DATE, 
-                            lastPickUpDate=PICKUP_TIME,
-                        )
-                except ValueError as error:
-                    print(error)
 
             reply_message = []
             message1 = TextSendMessage(
@@ -764,129 +687,21 @@ def handle_text_message(event) -> None:
             
         elif (event.message.text) == '查看今日有上架商品的商家':
 
-            if TODAY_LAUNCH_STORE_AMOUNT == 1:
-
-                ONE_STORE = True
-
-                show_all_launched_store_template_message = TemplateSendMessage(
-                    alt_text='All Launched Store Carousel template',
-                    template=CarouselTemplate(
-                        columns=[
-                            CarouselColumn(
-                                thumbnail_image_url='https://i.imgur.com/mLUy2P8.png',
-                                image_aspect_ratio='square',
-                                image_size='cover',
-                                title='今日有登陸商品的商家',
-                                text='可以點擊下方商家名稱以查看詳細資訊哦！',
-                                actions=[
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[0],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[0]}的資訊',
-                                    ),
-                                ]
-                            ),
-                        ]
-                    )
-                )
-
-            elif TODAY_LAUNCH_STORE_AMOUNT == 2:
-
-                ONE_STORE == True
-                TWO_STORE == True
-
-                show_all_launched_store_template_message = TemplateSendMessage(
-                    alt_text='All Launched Store Carousel template',
-                    template=CarouselTemplate(
-                        columns=[
-                            CarouselColumn(
-                                thumbnail_image_url='https://i.imgur.com/mLUy2P8.png',
-                                image_aspect_ratio='square',
-                                image_size='cover',
-                                title='今日有登陸商品的商家',
-                                text='可以點擊下方商家名稱以查看詳細資訊哦！',
-                                actions=[
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[0],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[0]}的資訊',
-                                    ),
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[1],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[1]}的資訊',
-                                    ),
-                                ]
-                            ),
-                        ]
-                    )
-                )
-
-            elif TODAY_LAUNCH_STORE_AMOUNT == 3:
-
-                ONE_STORE == True
-                TWO_STORE == True
-                THREE_STORE = True
-
-                show_all_launched_store_template_message = TemplateSendMessage(
-                    alt_text='All Launched Store Carousel template',
-                    template=CarouselTemplate(
-                        columns=[
-                            CarouselColumn(
-                                thumbnail_image_url='https://i.imgur.com/mLUy2P8.png',
-                                image_aspect_ratio='square',
-                                image_size='cover',
-                                title='今日有登陸商品的商家',
-                                text='可以點擊下方商家名稱以查看詳細資訊哦！',
-                                actions=[
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[0],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[0]}的資訊',
-                                    ),
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[1],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[1]}的資訊',
-                                    ),
-                                    MessageAction(
-                                        label=TODAY_LAUNCH_STORE[2],
-                                        text=f'我想查看{TODAY_LAUNCH_STORE[2]}的資訊',
-                                    ),
-                                ]
-                            ),
-                        ]
-                    )
-                )
-
             reply_message = []
 
             message1 = TextSendMessage(
                 text='您好！以下是今日有登陸商品的店家' +
                 '\n請點選商家名稱按鈕以查看詳細商家資訊')
             reply_message.append(message1)
-            reply_message.append(show_all_launched_store_template_message)
 
             line_bot_api.reply_message(
                 event.reply_token,
                 reply_message)
-            
-        elif (event.message.text) == f'我想查看{TODAY_LAUNCH_STORE[0]}的資訊' \
-            and ONE_STORE == True:
-
-            reply_message = []
-
-            FIRST_STORE_PRODUCT_NAME = DatabaseService.getProductsName(
-                storeName=TODAY_LAUNCH_STORE[0])
-
-        elif (event.message.text) == f'我想查看{TODAY_LAUNCH_STORE[1]}的資訊' \
-            and TWO_STORE == True:
-
-            reply_message = []
-
-        elif (event.message.text) == f'我想查看{TODAY_LAUNCH_STORE[2]}的資訊' \
-            and THREE_STORE == True:
-
-            reply_message = []
 
         elif (event.message.text) == '我想要查詢訂單詳情':
 
             reply_message = []
+
             reply_message.append(Generator.order_check_buttons_template_message)
 
             line_bot_api.reply_message(
@@ -897,9 +712,23 @@ def handle_text_message(event) -> None:
 
             reply_message = []
 
+            message1 = TextSendMessage(
+                text='此功能仍在測試中！')
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
+
         elif (event.message.text) == '我是食客，我想查看訂單情形':
 
             reply_message = []
+
+            message1 = TextSendMessage(
+                text='此功能仍在測試中！')
+            
+            line_bot_api.reply_message(
+                event.reply_token,
+                reply_message)
 
         else :
 
