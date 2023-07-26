@@ -1,6 +1,6 @@
 # Feather Feast
 
-[![project badge](https://img.shields.io/badge/1chooo-line__leftovers__bot-informational)](https://github.com/1chooo/line-leftovers-bot)
+[![project badge](https://img.shields.io/badge/1chooo-feather__feast-informational)](https://github.com/1chooo/line-leftovers-bot)
 [![Made with Python](https://img.shields.io/badge/Python=3.9-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
 [![License](https://img.shields.io/badge/License-MIT-blue)](./LICENSE "Go to license section")
 
