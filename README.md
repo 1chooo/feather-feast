@@ -1,4 +1,4 @@
-# Leftovers Bot
+# Feather Feast
 
 [![project badge](https://img.shields.io/badge/1chooo-line__leftovers__bot-informational)](https://github.com/1chooo/line-leftovers-bot)
 [![Made with Python](https://img.shields.io/badge/Python=3.9-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
@@ -8,6 +8,10 @@
 
 The primary objective of this project is to develop a Line Bot with an ordering system to address the issue of food waste. 
 Our approach involves integrating the concept of "SDGs" (Sustainable Development Goals) and promoting the idea of "preserving the environment for the long term."
+
+| [一食二鳥——剩食媒合平台](https://lin.ee/Iohs4wU) | 一食二鳥——剩食媒合平台 - LINE QRCODE |
+|-|-|
+| <img src="assets/img/profile.jpg" width="300">| <img src="assets/img/L_gainfriends_2dbarcodes_BW.png" width="300"> |
 
 ### Project Structure
 ```
@@ -28,12 +32,13 @@ PROJECT_ROOT
 python request: `3.9.6`
 
 ```
-pip3 install virtualenv
-virtualenv venv --python=python3.9.6
-source venv/bin/activate
-pip install -r requirements.txt
-deactivate
-rm -rf venv     # remove the venv
+$ pip3 install virtualenv
+$ virtualenv venv --python=python3.9.6
+$ source venv/bin/activate
+$ pip install --upgrade pip
+$ pip install -r requirements.txt
+$ deactivate
+$ rm -rf venv     # remove the venv
 ```
 
 #### Config Example

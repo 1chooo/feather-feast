@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-
-""" 
-Import the package we need. 
-"""
+'''
+Create Date: 2023/07/26
+Author: @1chooo(Hugo ChunHo Lin)
+Version: v0.0.2
+'''
 
 import os
 from numpy import NaN

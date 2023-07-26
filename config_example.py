@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+'''
+Create Date: 2023/07/26
+Author: @1chooo(Hugo ChunHo Lin)
+Version: v0.0.1
+'''
+
 # 生成實體物件
 line_bot_api = ''
 handler = ''
