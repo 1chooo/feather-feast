@@ -375,16 +375,6 @@ def handle_text_message(event) -> None:
 
     try:
 
-        TODAY_LAUNCH_STORE = DatabaseService.getStoreNameByOnlineProduct()
-        TODAY_LAUNCH_STORE_AMOUNT = len(TODAY_LAUNCH_STORE)
-
-    except ValueError as error:
-            print(error)
-
-
-
-    try:
-
         if (event.message.text) == '來認識「一食二鳥」吧！':
 
             reply_message = []
@@ -420,7 +410,7 @@ def handle_text_message(event) -> None:
                 reply_message)
 
             
-        elif (event.message.text) == '我要成為商家上架商品':
+        elif (event.message.text) == '今天想上架什麼剩食商品呢？':
 
             reply_message = []
 
@@ -685,7 +675,7 @@ def handle_text_message(event) -> None:
             
             UPDATE_STORE_INFO_TO_DB = False
             
-        elif (event.message.text) == '查看今日有上架商品的商家':
+        elif (event.message.text) == '我想看今天上架什麼剩食商品！':
 
             reply_message = []
 
@@ -698,7 +688,7 @@ def handle_text_message(event) -> None:
                 event.reply_token,
                 reply_message)
 
-        elif (event.message.text) == '我想要查詢訂單詳情':
+        elif (event.message.text) == '我想要查詢訂單詳情！':
 
             reply_message = []
 

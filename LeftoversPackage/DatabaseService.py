@@ -1,12 +1,13 @@
 from datetime import datetime
 import pytz
-import DatabaseSetting as database
+# import DatabaseSetting as database
 import pymysql
 import config
+from .DatabaseSetting import initDataBase
 
 # get store id by store name
 def getStore(item, hasUserId = False):
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     if hasUserId:
         sql = "SELECT id FROM stores WHERE user_id = '%s'" % (item)
     else:
@@ -21,7 +22,7 @@ def getStore(item, hasUserId = False):
 
 # get product by product id and store id
 def getProduct(productId, storeId):
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT id FROM products WHERE id = %d AND store_id = %d" % (productId, storeId)
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -48,7 +49,7 @@ def createStore(storeName, userId, storeAddress):
     """
 
     try:
-        db, cursor = database.initDataBase()
+        db, cursor = initDataBase()
         sql = "INSERT INTO stores (name, user_id, address) VALUES ('%s', '%s', '%s')" % (storeName, userId, storeAddress)
         cursor.execute(sql)
         db.commit()
@@ -91,7 +92,7 @@ def createProduct(userId, productName, productPrice, productNumber, imageFileNam
     print('Image url has been generated:', imageUrl)
 
     dateTimeToday = datetime.utcnow().replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Taipei')).strftime('%Y-%m-%d %H:%M:%S')
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "INSERT INTO products (store_id, name, price, number, image_url, create_at, expired_date, last_pick_up_date) VALUES (%d, '%s', %d, %d, '%s', '%s', '%s', '%s')" % (storeId, productName, productPrice, productNumber, imageUrl, dateTimeToday, datetime.strptime(expiredDate, '%Y-%m-%dT%H:%M'), datetime.strptime(lastPickUpDate, '%Y-%m-%dT%H:%M'))
     cursor.execute(sql)
     db.commit()
@@ -133,7 +134,7 @@ def updateProduct(userId, productId, productName, productPrice, productNumber, i
     storeId = getStore(userId, True)
     if (getProduct(productId, storeId)):
         imageUrl = config.image_folder + "/" + imageFileName
-        db, cursor = database.initDataBase()
+        db, cursor = initDataBase()
         sql = "UPDATE products SET name = '%s', price = %d, number = %d, image_url = '%s', expired_date = '%s', last_pick_up_date = '%s' WHERE id = %d" % (productName, productPrice, productNumber, imageUrl, datetime.strptime(productExpiredDate, '%Y-%m-%dT%H:%M'), datetime.strptime(productLastPickUpDate, '%Y-%m-%dT%H:%M'), productId)
         cursor.execute(sql)
         db.commit()
@@ -160,7 +161,7 @@ def deleteProduct(userId, productId):
 
     storeId = getStore(userId, True)
     if (getProduct(productId, storeId)):
-        db, cursor = database.initDataBase()
+        db, cursor = initDataBase()
         sql = "DELETE FROM products WHERE id = %d" % (productId)
         cursor.execute(sql)
         db.commit()
@@ -188,7 +189,7 @@ def placeOrder(userId, storeId, productId, userName, description):
 
     """
 
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     try:
         cursor.execute("SELECT name, price, expired_date, last_pick_up_date FROM products WHERE id = %d AND number != 0 AND store_id = %d FOR UPDATE" % (productId, storeId))
         product = cursor.fetchmany(1)
@@ -227,7 +228,7 @@ def cancelOrder(orderId, userId):
 
     """
 
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT id FROM orders WHERE id = %d AND user_id = '%s'" % (orderId, userId)
     cursor.execute(sql)
     data = cursor.fetchmany(1)
@@ -242,7 +243,7 @@ def cancelOrder(orderId, userId):
 
 # get product details by product name
 def getProductByName(productName):
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT id, name, price, number, image_url, expired_date, last_pick_up_date FROM products WHERE name = '%s' AND DATE(created_at) = CURDATE()" % (productName)
     cursor.execute(sql)
     data = cursor.fetchmany(1)
@@ -261,7 +262,7 @@ def getProductByName(productName):
 def getProductsName(storeName):
     result = []
     storeId = getStore(storeName)
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT id, name FROM products WHERE store_id = %d AND DATE(created_at) = CURDATE()" % (storeId)
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -277,7 +278,7 @@ def getProductsName(storeName):
 def getStoreNameByOnlineProduct():
     storeId = []
     result = []
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT store_id, COUNT(store_id) FROM products WHERE DATE(created_at) = CURDATE() GROUP BY store_id"
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -299,7 +300,7 @@ def getStoreNameByOnlineProduct():
 
 # get order details by store id
 def getStoreDetails(storeId):
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     sql = "SELECT * FROM stores WHERE id = %d" % (storeId)
     cursor.execute(sql)
     data = cursor.fetchmany(1)
@@ -313,7 +314,7 @@ def getStoreDetails(storeId):
 
 # get order detail
 def getOrderDetails(itemId, isStoreOrder = False, isUserOrder = False):    
-    db, cursor = database.initDataBase()
+    db, cursor = initDataBase()
     if isStoreOrder:
         sql = "SELECT * FROM orders WHERE store_id = %d" % (itemId)
     elif isUserOrder:

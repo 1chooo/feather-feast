@@ -1,3 +1,6 @@
+#### Package 
+* [Python 的 Import 陷阱](https://medium.com/pyladies-taiwan/python-%E7%9A%84-import-%E9%99%B7%E9%98%B1-3538e74f57e3)
+
 #### ngrok sever roblem
 * [Flask + ngrok - Access to subdomain.ngrok.io was denied - 403 Error](https://stackoverflow.com/questions/70247195/flask-ngrok-access-to-subdomain-ngrok-io-was-denied-403-error)
 

@@ -182,3 +182,13 @@ products_info1 = Generator.carousel_template_generator_three(
                 label3=THIRD_PRODUCT_NAME,
                 label3_info=f'我想要了解{THIRD_PRODUCT_NAME}',
             )
+
+
+# 商家名稱一個：精英自助餐
+# 商家商品三個：
+# 卡拉雞腿便當
+# 家鄉排骨便當
+# 無骨雞排便當
+# 商家地址一個：台北市文山區指南路二段49號（真的地址
+# 商品圖片三張：
+# 那六宮格可能也要換

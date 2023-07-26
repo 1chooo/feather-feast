@@ -9,6 +9,19 @@
 The primary objective of this project is to develop a Line Bot with an ordering system to address the issue of food waste. 
 Our approach involves integrating the concept of "SDGs" (Sustainable Development Goals) and promoting the idea of "preserving the environment for the long term."
 
+### Project Structure
+```
+PROJECT_ROOT
+├── assets                    # Docs, imgs
+├── LeftoversPackage          # Project Package
+│   ├── DatabaseService.py    # database function
+│   ├── Tools.py              # Project tools
+│   └── Generator.py          # Generator LINE BOT Drama
+├── log                       # User's log
+├── templates                 # flask templates
+└── venv                      # pip vertial env
+```
+
 ### Enviroment: 
 
 #### With pip vertial environment
