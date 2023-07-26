@@ -7,3 +7,5 @@ log/
 .DS_Store
 assets/db/
 uploader/
+
+config/linebot.conf

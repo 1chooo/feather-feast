@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+        /* body {
+            font-size: 50px;
+        } */
+
+        input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        input[type="text"],
+        select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        form {
+            padding: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        legend {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="datetime-local"] {
+            padding: 8px 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            /* width: 200px; */
+        }
+
+        input[type="radio"] {
+            transform: scale(1);
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .radio-group label {
+            margin-left: 10px;
+        }
+
+        /* 增加CSS設定 */
+        /* #agreePolicy,
+        #disagreePolicy {
+            margin-right: 0.5rem;
+        } */
+
+        /* 增加RWD設定 */
+        @media screen and (max-width: 768px) {
+            body {
+                font-size: 30px;
+            }
+
+            form {
+                padding: 0.5rem;
+            }
+
+            input[type="text"],
+            select {
+                font-size: 0.8rem;
+            }
+
+            input[type="datetime-local"] {
+                width: 100%;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+            }
+
+            #ExpiryDate {
+                width: 100%;
+            }
+
+            #PickupTime {
+                width: 100%;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>一食二鳥－剩食媒合平台（商家上架用）</h1>
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        <br><br>
+        <label for="content">我們是一食二鳥－剩食媒合平台</label><br><br>
+        <!-- <label for="content">我們是一食二鳥－剩食媒合平台</label><br><br> -->
+        <h2>請詳閱使用者政策</h2>
+        <!-- <a href="https://www.youtube.com/">這個連結</a>會連到 YouTube(測試用，可以寫個頁面放使用者政策，也可以直接放這)<br>
+        <br><br> -->
+        <!-- <label for="policy">我同意使用者條款</label> -->
+        <!-- <label for="agreePolicy">同意</label>
+        <input type="checkbox" id="agreePolicy" name="agreePolicy" checked>
+        <label for="disagreePolicy">再看看</label>
+        <input type="checkbox" id="disagreePolicy" name="disagreePolicy"> -->
+
+        <!-- <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}><label
+            for="YES">我已閱讀並同意上述條款和條件</label>
+        <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}><label for="NO">我還想再閱讀使用者條款</label> -->
+
+        <div class="radio-group">
+            <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="1" {{YES}}>
+            <label for="CHECK_POLICY_YES">我已閱讀並同意上述條款和條件</label>
+            <input type="radio" id="CHECK_POLICY" name="CHECK_POLICY" value="0" {{NO}}>
+            <label for="CHECK_POLICY_NO">我還想再閱讀使用者條款</label>
+        </div>
+
+        <!-- <label>
+            <input type="checkbox" name="agreePolicy" value="{{YES}}" style="width:40px;height:40px;">
+            我已閱讀並同意上述條款和條件
+        </label>
+        <label>
+            <input type="checkbox" name="disagreePolicy" value="{{NO}}" style="width:40px;height:40px;">
+            我還想再閱讀使用者條款
+        </label> -->
+
+        <br><br>
+        <h2 for="inputStoreName">請輸入商家資訊</h2>
+        <br><br>
+        <span for="STORE_NAME">商家名稱：</span>
+        <input type="text" id="STORE_NAME" name="STORE_NAME" value="{{STORE_NAME}}">
+        <!-- <br><br>
+        <label for="inputStoreAddress">請輸入商家地址</label> -->
+        <br><br>
+        <span for="STORE_ADDRESS">商家地址：</span>
+        <input type="text" id="STORE_ADDRESS" name="STORE_ADDRESS" value="{{STORE_ADDRESS}}">
+        <br><br>
+        <h2 for="inputProductTypeAmount">請輸入商品資訊</h2>
+        <br><br>
+        <label for="productTypeAmount">商品種類數量：</label>
+        <select name="productTypeAmount" id="productTypeAmount">
+            <option value="1" {{PRODUCT_TYPE_AMOUNT_1}}>1</option>
+            <option value="2" {{PRODUCT_TYPE_AMOUNT_2}}>2</option>
+            <option value="3" {{PRODUCT_TYPE_AMOUNT_3}}>3</option>
+        </select>
+        <br><br>
+        <h3 for="inputFirstProductInfo">請輸入第一項商品資訊</h3>
+        <br><br>
+        <span for="FIRST_PRODUCT_NAME">第一項商品名稱：</span>
+        <input type="text" id="FIRST_PRODUCT_NAME" name="FIRST_PRODUCT_NAME" value="{{FIRST_PRODUCT_NAME}}">
+        <br><br>
+        <span for="FIRST_PRODUCT_AMOUNT">第一項商品數量：</span>
+        <input type="text" id="FIRST_PRODUCT_AMOUNT" name="FIRST_PRODUCT_AMOUNT" value="{{FIRST_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="FIRST_PRODUCT_PRICE">第一項商品售價：</span>
+        <input type="text" id="FIRST_PRODUCT_PRICE" name="FIRST_PRODUCT_PRICE" value="{{FIRST_PRODUCT_PRICE}}">
+        <br><br>
+        <h3 for="inputSeconeProductInfo">請輸入第二項商品資訊</h3>
+        <br><br>
+        <span for="SECOND_PRODUCT_NAME">第二項商品名稱：</span>
+        <input type="text" id="SECOND_PRODUCT_NAME" name="SECOND_PRODUCT_NAME" value="{{SECOND_PRODUCT_NAME}}">
+        <br><br>
+        <span for="SECOND_PRODUCT_AMOUNT">第二項商品數量：</span>
+        <input type="text" id="SECOND_PRODUCT_AMOUNT" name="SECOND_PRODUCT_AMOUNT" value="{{SECOND_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="SECOND_PRODUCT_PRICE">第二項商品售價：</span>
+        <input type="text" id="SECOND_PRODUCT_PRICE" name="SECOND_PRODUCT_PRICE" value="{{SECOND_PRODUCT_PRICE}}">
+        <br><br>
+        <h3 for="inputThirdProductInfo">請輸入第三項商品資訊</h3>
+        <br><br>
+        <span for="THIRD_PRODUCT_NAME">第三項商品名稱：</span>
+        <input type="text" id="THIRD_PRODUCT_NAME" name="THIRD_PRODUCT_NAME" value="{{THIRD_PRODUCT_NAME}}">
+        <br><br>
+        <span for="THIRD_PRODUCT_AMOUNT">第三項商品數量：</span>
+        <input type="text" id="THIRD_PRODUCT_AMOUNT" name="THIRD_PRODUCT_AMOUNT" value="{{THIRD_PRODUCT_AMOUNT}}">
+        <br><br>
+        <span for="THIRD_PRODUCT_PRICE">第三項商品售價：</span>
+        <input type="text" id="THIRD_PRODUCT_PRICE" name="THIRD_PRODUCT_PRICE" value="{{THIRD_PRODUCT_PRICE}}">
+        <!-- <br><br>
+        <label for="inputExpiryDate">請輸入最佳食用期限</label> -->
+        <br><br>
+        <label for="EXPIRY_DATE">請選取最佳食用期限：</label>
+        <input id="EXPIRY_DATE" type="datetime-local" name="EXPIRY_DATE" value="{{EXPIRY_DATE}}"
+            style="width:700px;height:40px;">
+        <!-- <br><br>
+        <label for="inputPickupTime">請輸入最後取餐時間</label> -->
+        <br><br>
+        <label for="PICKUP_TIME">請選取最後取餐時間：</label>
+        <input id="PICKUP_TIME" type="datetime-local" name="PICKUP_TIME" value="{{PICKUP_TIME}}"
+            style="width:700px;height:40px;">
+        <br><br>
+        <input type="submit" value="submit">
+        <br><br>
+        <label>資訊登陸狀態：{{STATUS}}</label>
+        <br><br>
+        <h3>商家資訊：</h3>
+        <label>商家名稱：{{STORE_NAME}}</label>
+        <label>商家地址：{{STORE_ADDRESS}}</label>
+        <label>商品種類數量：{{PRODUCT_TYPE_AMOUNT}}</label>
+        <br><br>
+        <h3>第一項商品資訊：</h3>
+        <label>第一項商品名稱：{{FIRST_PRODUCT_NAME}}</label>
+        <label>第一項商品數量：{{FIRST_PRODUCT_AMOUNT}}</label>
+        <label>第一項商品售價：{{FIRST_PRODUCT_PRICE}}</label>
+        <h3>第二項商品資訊：</h3>
+        <label>第二項商品名稱：{{SECOND_PRODUCT_NAME}}</label>
+        <label>第二項商品數量：{{SECOND_PRODUCT_AMOUNT}}</label>
+        <label>第二項商品售價：{{SECOND_PRODUCT_PRICE}}</label>
+        <h3>第三項商品資訊：</h3>
+        <label>第三項商品名稱：{{THIRD_PRODUCT_NAME}}</label>
+        <label>第三項商品數量：{{THIRD_PRODUCT_AMOUNT}}</label>
+        <label>第三項商品售價：{{THIRD_PRODUCT_PRICE}}</label>
+        <br><br>
+        <label>最佳食用期限：{{EXPIRY_DATE}}</label>
+        <label>最後取餐時間：{{PICKUP_TIME}}</label>
+        
+    </form>
+    <br>
+    <!-- <div> -->
+    <!-- </div> -->
+</body>
+
+</html>
