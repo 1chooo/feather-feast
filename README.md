@@ -9,8 +9,8 @@
 The primary objective of this project is to develop a Line Bot with an ordering system to address the issue of food waste. 
 Our approach involves integrating the concept of "SDGs" (Sustainable Development Goals) and promoting the idea of "preserving the environment for the long term."
 
-| [一食二鳥——剩食媒合平台](https://lin.ee/Iohs4wU) | 一食二鳥——剩食媒合平台 - LINE QRCODE |
-|-|-|
+| [一食二鳥——剩食媒合平台](https://lin.ee/Iohs4wU) | LINE QRCODE |
+|:-:|:-:|
 | <img src="assets/img/profile.jpg" width="300">| <img src="assets/img/L_gainfriends_2dbarcodes_BW.png" width="300"> |
 
 ### Project Structure
@@ -29,11 +29,11 @@ PROJECT_ROOT
 ### Enviroment: 
 
 #### With pip vertial environment
-python request: `3.9.6`
+python request: `3.10.1`
 
 ```
 $ pip3 install virtualenv
-$ virtualenv venv --python=python3.9.6
+$ virtualenv venv --python=python3.10
 $ source venv/bin/activate
 $ pip install --upgrade pip
 $ pip install -r requirements.txt

@@ -28,3 +28,4 @@ def main() -> None:
     start_flask()
 
 if __name__ == '__main__':
+    main()
