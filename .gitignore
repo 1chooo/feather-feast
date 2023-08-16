@@ -7,5 +7,9 @@ log/
 .DS_Store
 assets/db/
 uploader/
+venv/
 
 config/linebot.conf
+config/chatgpt.conf
+config/imgur.conf
+config/mysql.conf
