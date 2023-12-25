@@ -26,21 +26,21 @@ from linebot.exceptions import InvalidSignatureError
 from os.path import join
 from os.path import dirname
 from os.path import abspath
+from FeatherFeast.config.config import get_config
 
 app = Flask(__name__)
 swagger = Swagger(app)
 
-config_dir = join(dirname(abspath(__file__)), '..', '..', 'config')
-line_bot_config_path = join(config_dir, 'linebot.conf')
-line_bot_config = json.load(open(line_bot_config_path, 'r', encoding='utf8'))
-imgur_config_path = join(config_dir, 'imgur.conf')
-imgur_config = json.load(open(imgur_config_path, 'r', encoding='utf8'))
+line_bot_api, handler, imgur_client = get_config()
+print(line_bot_api)
+print(handler)
+print(imgur_client)
 
-CURRENT_DATE = datetime.today().strftime('%Y%m%d')
-LINE_BOT_API = LineBotApi(line_bot_config['CHANNEL_ACCESS_TOKEN'])
-HANDLER = WebhookHandler(line_bot_config['CHANNEL_SECRET'])
-IMGUR_CLIENT = Imgur(imgur_config["client_id"], imgur_config["client_secret"])
-USER_LOG_PATH = join(dirname(abspath(__file__)), '..', '..', 'log', CURRENT_DATE)
+current_date = datetime.today().strftime('%Y%m%d')
+user_log_path = join(dirname(abspath(__file__)), '..', '..', 'log', current_date)
 
 def start_flask() -> None:
-    app.run(port=6006, debug=True)
+    app.run(
+        port=6006, 
+        # debug=True,
+    )

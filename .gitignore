@@ -1,5 +1,4 @@
 bearbear/
-config.py
 assets/docs/
 ai-event.log
 log/
@@ -13,3 +12,7 @@ config/linebot.conf
 config/chatgpt.conf
 config/imgur.conf
 config/mysql.conf
+Leftovers/config.py
+Leftovers/LeftoversPackage/config.py
+Leftovers/test/config.py
+Leftovers/test/past/config.py
